@@ -1,0 +1,343 @@
+\documentclass{beamer}
+\special{landscape}
+
+%\usetheme{Berlin}
+\usetheme{Warsaw}
+
+%\usecolortheme{seahorse}
+%\usefonttheme[onlysmall]{structurebold}
+
+\setbeamertemplate{headline}[split]
+\setbeamertemplate{footline}[default]
+\setbeamertemplate{footline}[miniframes theme]
+%\logo{\includegraphics[scale=0.25]{lifia_logo.png}}
+
+\mode<presentation>
+\usepackage[spanish]{babel}
+\usepackage{beamerthemesplit}
+\usepackage[utf8]{inputenc}
+\usepackage{color}      % use if color is used in text
+
+
+% Comandos en modo Verbatim
+%\usepackage{fancyvrb}
+
+
+\title{Practica 3 - Parte 2 - HAND-SHAKE y CDMA}
+%\author{Juan Antonio Zubimendi\\azubimendi@lifia.info.unlp.edu.ar}
+
+%\institute{LINSE}
+%\date{24/04/2008}
+
+\AtBeginSection[]
+
+\begin{document}
+
+\begin{frame}
+%\frametitle{Presentación}
+\titlepage
+\end{frame}
+
+\section{HAND-SHAKE}
+\subsection{Introducción}
+\begin{frame}
+\frametitle{Hand-Shake}
+%\begin{block}{Slot Accounting System}
+\begin{itemize}
+ \item Interfaz que nos permite comunicarnos facilmente con la Impresora, ya que realiza la temporización automáticamente
+ \item Posee dos registros, de 8 bits.
+  \begin{itemize}
+   \item DATO: Registro de datos. De lectura y escritura. Es el caracter a enviar o el ultimo enviado.
+   \item EST: Un registro de estado.
+  \end{itemize}
+ \item Los dos registros estan a partir de la posición 40h. 
+  \begin{itemize}
+      \item 40h = DATO
+      \item 41h = EST
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\subsection{Continuación}
+\begin{frame}
+\frametitle{Continuación}
+%\begin{block}{Slot Accounting System}
+\begin{itemize}
+ \item El registro de estado 
+ \begin{itemize}
+   \item Bit 0: Linea Busy - Idem Impresora
+   \item Bit 1: Linea Strobe - Idem Impresora
+   \item Bit 2..6: No tienen sentido
+   \item Bit 7: Interrupción: 0 => Desactivada, 1 => Activada
+  \end{itemize}
+ \item ¿Cuándo se dispara la interrupción? Cuando la línea BUSY se desactiva.
+ \item Tenemos 2 maneras de utilizar el HAND-SHAKE: con interrupciones o sin interrupciones
+\end{itemize}
+\end{frame}
+
+\subsection{Interrupción}
+\begin{frame}
+\frametitle{Interrupción}
+%\begin{block}{Slot Accounting System}
+\begin{itemize}
+ \item Para utilizar HAND-SHAKE con interrupciones debemos usar el modo de configuración 2 (c2)
+
+ \item La interrupción que genera el HAND-SHAKE se conectará a la interrupción de nivel 2 (INT2) del PIC
+
+ \item Cuando el manejador de la interrupción sea invocado. La impresora va a estar lista para recibir un caracter.
+\end{itemize}
+\end{frame}
+
+
+\subsection{Sin interrupciones}
+\begin{frame}[fragile]
+\frametitle{Como usar el HAND-SHAKE sin interrpciones}
+\begin{itemize}
+ \item El simulador debe estar en la Configuración 1
+ \item Debemos esperar a que la impresora este lista, consultado el estado de la linea BUSY en el registro EST
+ \item Cuando la impresora este lista, escribimos el caracter a imprimir en el registro DATO.
+ \item ¿Qué diferencias hay con el uso de la impresora con el PIO?
+\end{itemize}
+
+\begin{block}{}
+ \begin{verbatim}
+   POLL: IN AL, 41h
+         AND AL, 1
+         JNZ POLL
+
+         MOV AL, PROX_CAR
+         OUT 40h, AL
+ \end{verbatim}
+\end{block}
+
+\end{frame}
+
+
+
+\subsection{Con interrupciones}
+\begin{frame}[fragile]
+\frametitle{Como usar el HAND-SHAKE con interrpciones}
+\begin{itemize}
+ \item El simulador debe estar en la configuración 2
+ \item Debemos programar el PIC para que atienda la interrupción de nivel 2 (INT2)
+ \item Debemos cargar la dirección de la rutina en el vector de interrupciones correspondiente
+ \item En la rutina de la interrupción escribimos el caracter a enviar a la impresora
+\end{itemize}
+
+\begin{block}{}
+ \begin{verbatim}
+  RUT_HAND:
+         ...
+         MOV AL, PROX_CAR
+         OUT 40h, AL
+         ...
+         IRET
+ \end{verbatim}
+\end{block}
+
+\end{frame}
+
+
+
+
+\section{Controlador de DMA}
+\subsection{Introducción}
+\begin{frame}
+\frametitle{Controlador de DMA}
+%\begin{block}{Slot Accounting System}
+\begin{itemize}
+  \item ¿Que es DMA?
+  \item Nos permite realizar transferencias de datos de 8 bits memoria-memoria, memoria-periférico o periférico-memoria.
+  \item Por ser una transferencia DMA la CPU no interviene, pero si debe cederle el bus al CDMA.
+  \item En el simulador hay que utilizar la Configuración 3 (c3).
+\end{itemize}
+\end{frame}
+
+\subsection{Caracteristicas}
+\begin{frame}
+\frametitle{Caracteristicas}
+%\begin{block}{Slot Accounting System}
+\begin{itemize}
+  \item El simulador posee un solo canal DMA
+  \item Puede realizar transferencias en dos modos diferentes:
+\begin{itemize}
+  \item Modo Bloque: Se enviará el bloque completo una vez iniciada la transferencia
+  \item Modo Bajo demanda: del periferico al que se encuentre conectado
+\end{itemize}
+  \item Cuando el CDMA termina de realizar la transferencia genera una interrupción.
+  \item El CDMA está conectado a la línea de interrupción 3 del PIC.
+\end{itemize}
+\end{frame}
+
+\subsection{Conexión}
+\begin{frame}
+\frametitle{Conexión}
+\includegraphics[scale=0.45]{conf3.png}
+\end{frame}
+
+\subsection{Registros}
+\begin{frame}
+\frametitle{Registros}
+  El controlador de DMA posee los siguientes registros
+\begin{itemize}
+ \item \emph{CTRL}: Un registro de control que nos permite configurar el funcionamiento del CDMA
+ \item \emph{RF}: Registro de direcciones fuente.
+  \begin{itemize}
+    \item En transferencias memoria-periferico o periferico-memoria, indica la memoria de donde leer o a donde escribir.
+    \item En transferencias memoria-memoria, es la posición de memoria de los datos a copiar.
+  \end{itemize}
+ 
+ \item \emph{RD}: Registro de direcciones destino. 
+  \begin{itemize}
+    \item Solo tiene sentido si es memoria-memoria.
+  \end{itemize}
+ \item \emph{CONT}: Registro Contador. Indica el número de bytes a transferir
+ \item \emph{ARRANQUE}: Registro de Arranque. Accediendo a este registro, se inicia la transferencia.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Registro de Control}
+  \begin{center}
+      \includegraphics[scale=0.45]{cdma-ctrl.png}
+  \end{center}
+
+  \begin{itemize}
+   \item El formato del registro \emph{CTRL} depende si lo estamos leyendo o escribiendo.
+  \end{itemize}
+  \begin{itemize}
+     \item En lectura
+     \begin{itemize}
+        \item \emph{STOP}:
+	  \begin{itemize}
+	      \item 0: Transferencia en Curso
+	      \item 1: Transferencia detenida por la CPU
+	  \end{itemize}
+        \item \emph{TC}:
+	  \begin{itemize}
+	      \item 0: Transferencia no finalizada
+	      \item 1: Transferencia ya finalizada
+	  \end{itemize}
+     \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Registro de Control}
+  \begin{itemize}
+     \item En escritura
+     \begin{itemize}
+        \item \emph{STOP}:
+	  \begin{itemize}
+	      \item 0: No tiene sentido
+	      \item 1: Detener momentaneamente la transferencia en curso
+	  \end{itemize}
+        \item \emph{TT}: Tipo de Transferencia
+	  \begin{itemize}
+	      \item 0: Transferencia Periferico-Memoria o Periferico-Memoria
+	      \item 1: Transferencia Memoria
+	  \end{itemize}
+        \item \emph{ST}: Sentido de la Transferencia
+	  \begin{itemize}
+	      \item 0: Sentido Periférico-Memoria
+	      \item 1: Sentido Memoria-Memoria
+	  \end{itemize}
+        \item \emph{MT}: Modo de Transferencia
+	  \begin{itemize}
+	      \item 0: Por demanda
+	      \item 1: Por Bloques
+	  \end{itemize}
+
+     \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Direccionamiento}
+  \begin{itemize}
+     \item Los registros se ubican a partir de la dirección 50h
+     \begin{itemize}
+        \item \emph{RF}: es de 16 bits 
+	\begin{itemize}
+	  \item \emph{RFL}: 050h - parte baja de \emph{RF}
+	  \item \emph{RFH}: 051h - parte alta de \emph{RF}
+	\end{itemize}
+        \item \emph{CONT}: es de 16 bits 
+	\begin{itemize}
+	  \item \emph{CONTL}: 052h - parte baja de \emph{CONT}
+	  \item \emph{CONTH}: 053h - parte alta de \emph{CONT}
+	\end{itemize}
+        \item \emph{RD}: es de 16 bits 
+	\begin{itemize}
+	  \item \emph{RDL}: 054h - parte baja de \emph{RD}
+	  \item \emph{RDH}: 055h - parte alta de \emph{RD}
+	\end{itemize}
+        \item \emph{CTRL}: 056h
+        \item \emph{ARRANQUE}: 057h
+     \end{itemize}
+  \end{itemize}
+ 
+\end{frame}
+
+\subsection{Uso}
+\begin{frame}
+\frametitle{¿Cómo lo usamos?}
+  \begin{itemize}
+     \item Demasiadas opciones, demasiadas configuraciones...
+     \item Veamos para que lo vamos a utilizar en el simulador...
+     \begin{itemize}
+	\item Para copiar una parte de la memoria a otra posición
+        \item Para mandar caracteres a la impresora a través del HAND-SHAKE
+     \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Memoria-Memoria}
+  \begin{itemize}
+     \item Configuramos el registro de Control
+     \begin{itemize}
+	\item Tipo Transferencia: Memoria-Memoria
+        \item Modo Transferencia: Bloques
+     \end{itemize}
+     \item Configuramos el registro \emph{RF} con la posición origen de la memoria
+     \item Configuramos el registro \emph{RD} con la posición destino de la memoria
+     \item Configuramos el registro \emph{CANT} con la cantidad de bytes a transferir
+     \item Configuramos el PIC y una manejador de interrupción para saber cuando la transferencia terminó.
+     \item Acceder al registro \emph{ARRANQUE} para iniciar la transferencia
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Ejemplo Memoria-Memoria}
+Veamos el ejercicio 10 de la práctica 3
+\end{frame}
+
+\begin{frame}
+\frametitle{Memoria-Periferico}
+  \begin{itemize}
+     \item Configuramos el registro de Control
+     \begin{itemize}
+	\item Tipo Transferencia: Memoria-Periferico
+        \item Sentido Transferencia: Memoria-Periferico
+        \item Modo Transferencia: bajo demanda
+     \end{itemize}
+     \item Configuramos el registro \emph{RF} con la posición origen de la memoria
+     \item Configuramos el registro \emph{CANT} con la cantidad de bytes a transferir
+     \item Configuramos el PIC y una manejador de interrupción para saber cuando la transferencia terminó.
+     \item Habilitamos el uso de interrupciones del HAND-SHAKE (conectado al CDMA)
+     \item Acceder al registro \emph{ARRANQUE} para iniciar la transferencia
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Ejemplo Memoria-Periferico}
+Veamos el ejercicio 11 de la práctica 3
+\end{frame}
+
+
+
+\end{document}
+

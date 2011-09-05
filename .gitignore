@@ -1,0 +1,11 @@
+*.out
+*.backup
+*~
+*.dvi
+*.log
+*.nav
+*.snm
+*.toc
+*.vrb
+*.aux
+Practica1/imgs/*.png
