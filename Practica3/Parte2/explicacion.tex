@@ -68,7 +68,7 @@
    \item Bit 0: Linea Busy - Idem Impresora
    \item Bit 1: Linea Strobe - Idem Impresora
    \item Bit 2..6: No tienen sentido
-   \item Bit 7: Interrupción: 0 => Desactivada, 1 => Activada
+   \item Bit 7: Interrupción: 0 = Desactivada, 1 = Activada
   \end{itemize}
  \item ¿Cuándo se dispara la interrupción? Cuando la línea BUSY se desactiva.
  \item Tenemos 2 maneras de utilizar el HAND-SHAKE: con interrupciones o sin interrupciones
@@ -235,13 +235,13 @@
 	  \end{itemize}
         \item \emph{TT}: Tipo de Transferencia
 	  \begin{itemize}
-	      \item 0: Transferencia Periferico-Memoria o Periferico-Memoria
-	      \item 1: Transferencia Memoria
+	      \item 0: Transferencia Periferico-Memoria o Memoria-Periferico
+	      \item 1: Transferencia Memoria-Memoria
 	  \end{itemize}
-        \item \emph{ST}: Sentido de la Transferencia
+        \item \emph{ST}: Sentido de la Transferencia (solo TT=0)
 	  \begin{itemize}
 	      \item 0: Sentido Periférico-Memoria
-	      \item 1: Sentido Memoria-Memoria
+	      \item 1: Sentido Memoria-Periferico
 	  \end{itemize}
         \item \emph{MT}: Modo de Transferencia
 	  \begin{itemize}
