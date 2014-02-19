@@ -1,0 +1,323 @@
+\documentclass{beamer}
+\special{landscape}
+
+%\usetheme{Berlin}
+\usetheme{Warsaw}
+
+%\usecolortheme{seahorse}
+%\usefonttheme[onlysmall]{structurebold}
+
+\setbeamertemplate{headline}[split]
+\setbeamertemplate{footline}[default]
+\setbeamertemplate{footline}[miniframes theme]
+%\logo{\includegraphics[scale=0.25]{lifia_logo.png}}
+
+\mode<presentation>
+\usepackage[spanish]{babel}
+\usepackage{beamerthemesplit}
+\usepackage{color}      % use if color is used in text
+
+\usepackage[utf8]{inputenc}
+
+% Comandos en modo Verbatim
+%\usepackage{fancyvrb}
+
+\usepackage{listings}
+
+
+%%
+%% WinMIPS64 definition (c) 2013
+\lstdefinelanguage{WinMIPS64}
+ {morekeywords={%
+cvt.l.d,cvt.d.l,mfc1,mtc1,DADD,DADDI,ANDI,XORI,HALT,BEQ,BNEQ,LD,NOP,DMUL,DSUB,AND,DDIV,%
+	beqz,jal,jr,slt,JAL,J,DSLL,BNEZ,SD},%
+ otherkeywords={.word,.code,.data,.text},%
+   sensitive=false,%
+   morecomment=[l]{;},%
+   morestring=[b]",%
+ }
+
+\lstset{emph={%  
+    F0,F1,F2,F3,F4,F5,F6,F7,F8,F9,F10,F11,F12,F13,F14,F15,F16,F17,F18,F19%
+    F20,F21,F22,F23,F24,F25,F26,F27,F28,F29,F30,F31%
+    f0,f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15,f16,f17,f18,f19%
+    f20,f21,f22,f23,f24,f25,f26,f27,f28,f29,f30,f31%
+    R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R12,R13,R14,R15,R16,R17,R18,R19%
+    R20,R21,R22,R23,R24,R25,R26,R27,R28,R29,R30,R31%
+    r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19%
+    r20,r21,r22,r23,r24,r25,r26,r27,r28,r29,r30,r31%
+    },emphstyle={\color{red}\bfseries}%
+}%
+
+%\lstset{emph={%  
+%    .code,.data,.word
+%    },emphstyle={\color{green}\bfseries}%
+%}%
+\title{Practica 5 - WinMIPS64}
+%\author{Juan Antonio Zubimendi\\azubimendi@lifia.info.unlp.edu.ar}
+
+\AtBeginSection[]
+
+\begin{document}
+
+\section{Punto Flotante}
+
+\subsection{Introducción}
+\begin{frame}
+\frametitle{Introducción}
+\begin{itemize}
+\item Lectura de memoria: \emph{l.d f1, desp(r5)}
+\item Escritura a memoria: \emph{s.d f3, res(r0)}
+\item Copiar valor de un registro a otro: \emph{mov.d fd, ff ; fd = ff }
+\end{itemize}
+No hay carga de valores inmediatos!
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Operaciones básicas}
+\begin{itemize}
+\item \emph{add.d fd, ff, fg}: Suma ff con fg, dejando el resultado en fd
+\item \emph{sub.d fd, ff, fg}: Resta fg a ff, dejando el resultado en fd
+\item \emph{mul.d fd, ff, fg}: Multiplica ff con fg, dejando el resultado en fd
+\item \emph{div.d fd, ff, fg}: Divide ff por fg, dejando el resultado en fd
+\end{itemize}
+\end{frame}
+
+\subsection{Conversión Punto Fijo / Punto Flotante}
+
+\begin{frame}
+\frametitle{Conversión Numero Entero / Punto Flotante}
+Las copias se deben hacer en 2 pasos.
+\begin{itemize}
+\item Copia de bits desde/hasta punto flotante
+\begin{itemize}
+\item En este paso se copian bits, no se copian valores!
+\end{itemize}
+\item Conversión de los bits en número entero / punto flotante.
+\end{itemize}
+
+Las conversiones no siempre respetan el número original (por cuestiones de redondeo y representación). Nosotros no vamos a tener en cuenta esto en la práctica.
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{De registro entero a punto flotante}
+Para copiar el valor que tengo en un registro entero (r0 a r31) a uno de punto flotante (f0 a f31):
+\begin{itemize}
+\item Copiar los 64 bits del registro entero rf al registro fd de punto flotante
+\begin{itemize}
+\item \emph{mtc1 rf, fd}
+\end{itemize}
+
+\item Conviertir a punto flotante el valor entero copiado al registro ff, dejándolo en fd
+\begin{itemize}
+\item \emph{cvt.d.l fd, ff}
+\end{itemize}
+
+\end{itemize}
+
+Importante: los números muy grandes serán redondeados en su mejor representación de punto flotante.
+
+\begin{block}{Copiar el valor de r5 a f10}
+\begin{lstlisting}[language=WinMIPS64,basicstyle=\ttfamily,keywordstyle=\color{blue}]
+mtc1 r5, f10
+cvt.d.l f10, f10
+\end{lstlisting}
+\end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{De punto flotante a registro entero}
+Para copiar el valor que tengo en un registro de punto flotante (f0 a f31) a un registro entero (r1 a r31):
+\begin{itemize}
+\item Conviertir a entero el valor en punto flotante contenido en ff, dejándolo en fd
+\begin{itemize}
+\item \emph{cvt.l.d fd, ff}
+\end{itemize}
+\item Copiar los 64 bits del registro ff de punto flotante al registro rd entero
+\begin{itemize}
+\item \emph{mfc1 rd, ff}
+\end{itemize}
+\end{itemize}
+
+Importante: El número se trunca, no se redondea
+\begin{block}{Copiar el valor de f3 a r8}
+\begin{lstlisting}[language=WinMIPS64,basicstyle=\ttfamily,keywordstyle=\color{blue}]
+cvt.l.d f4, f3
+mfc1 r8, f3
+\end{lstlisting}
+\end{block}
+
+\end{frame}
+
+
+\subsection{Saltos condicionales en Punto Flotante}
+
+\begin{frame}
+\frametitle{Saltos condicionales en Punto Flotante}
+La unidad de punto flotante posee un flag (FP):
+\begin{itemize}
+\item \emph{c.lt.d fd, ff}: Compara ff con fg, dejando FP=1 si ff es menor que fg, sino FP=0
+\item \emph{c.le.d fd, ff}: Compara ff con fg, dejando flag FP=1 si ff es menor o igual que fg, sino FP=0
+\item \emph{c.eq.d fd, ff}: Compara ff con fg, dejando flag FP=1 si ff es igual que fg, sino FP=0
+\end{itemize}
+
+Podemos usar el flag FP con las siguientes instrucciones:
+\begin{itemize}
+\item \emph{bc1t etiqueta}: Salta a \emph{etiqueta} si flag FP=1 
+\item \emph{bc1f etiqueta}: Salta a \emph{etiqueta} si flag FP=0
+\end{itemize}
+\end{frame}
+
+
+\section{Subrutinas}
+\subsection{Subrutinas}
+\begin{frame}
+\frametitle{Subrutinas}
+\begin{itemize}
+\item El soporte de la arquitectura para la invocación de subrutinas es menor que el soporte que existe en otras arquitecturas (Pila, CALL, RET)
+\item La instrucción encargada de realizar un llamado a una subrutina es \emph{jal} (jump and link):
+\begin{itemize}
+\item La instrucción guarda en el registro \emph{r31} la dirección de retorno de la subrutina
+\item Cambia el PC por la dirección de la subrutina
+\end{itemize}
+\item Para retornar, basta retornar a la posición apuntada por el registro \emph{r31}
+\begin{itemize}
+\item Esto podemos hacerlo con la instrucción \emph{jr r31}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Subrutinas}
+
+\tiny{
+\begin{tabular}{| c | p{3.5cm} | p{3.5cm} |}
+\hline
+Acción & MSX88 & WinMIPS64 \\ \hline
+Llamada a subrutina &
+\parbox{3.5cm}{CALL \emph{subrutina} \\ 
+	Se apila la dirección de retorno \\ 
+	Se actualiza IP con el valor de la subrutina } & 
+\parbox{3.5cm}{jal \emph{subrutina} \\
+Se guarda en el registro \emph{r31} la dirección de retorno \\
+Se actualiza PC con el valor de la subrutina} 
+\\ & & \\ \hline
+
+
+Retorno de la subrutina &
+\parbox{3.5cm}{RET \\ 
+	Se desapila la dirección de retorno y se  actualiza IP con ese valor } & 
+\parbox{3.5cm}{jr \emph{r31} \\
+Se actualiza PC con el valor del registro \emph{r31}, que tiene la dirección de retorno de la subrutina} 
+\\ & & \\ \hline
+		
+\end{tabular}	
+}
+
+\begin{itemize}
+\item ¿Qué pasa si una subrutina invoca a otra subrutina?
+\end{itemize}
+
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Ejemplo}
+\tiny{
+\begin{block}{}
+\begin{lstlisting}[language=WinMIPS64,basicstyle=\ttfamily,keywordstyle=\color{blue}]
+               .data
+               base: .word 16
+               exponente: .word 4
+               result: .word 0
+			   
+               .text
+               ld r1, base(r0)
+               ld r2, exponente(r0)
+               jal a_la_potencia
+               sd r5, result(r0)
+               halt
+
+a_la_potencia: daddi r5, r0, 1
+lazo:          beqz r2, terminar
+               daddi r2, r2, -1
+               dmul r5, r5, r1
+               j lazo
+terminar:      jr r31
+\end{lstlisting}
+\end{block}
+}
+\end{frame}
+
+
+
+\section{Uso normalizado de los registros}
+\begin{frame}
+\frametitle{Normalización de registros}
+En lugar de usar r0-r31 es más conveniente darle nombre más significativos a los registros:
+\tiny{
+\begin{tabular}{| c | c | p{6.5cm} | c |}
+\hline
+Registro & Nombre & Uso & Preservado \\ \hline
+\emph{r0} & \emph{\$zero} & Siempre tiene el valor 0 y no se puede cambiar. & No \\ \hline
+\emph{r1} & \emph{\$at} & Assembler Temporary – Reservado para ser usado por el ensamblador. & No \\ \hline
+\emph{r2 - r3} & \emph{\$v0 - \$v1} & Valores de retorno de la subrutina llamada. & No \\ \hline
+\emph{r4 - r7} & \emph{\$a0 - \$a3} & Argumentos pasados a la subrutina llamada. & No \\ \hline
+\emph{r8 - r15} & \emph{\$t0 - \$t7} & Registros temporarios. No son conservados en el llamado a subrutinas. & No \\ \hline
+\emph{r16 - r23} & \emph{\$s0 - \$s7} &  Registros salvados durante el llamado a subrutinas. & Si \\ \hline
+\emph{r24 - r25} & \emph{\$t8 - \$t9} & Registros temporarios. No son conservados en el llamado a subrutinas. & No \\ \hline
+\emph{r26 - r27} & \emph{\$k0 - \$k1} & Para uso del kernel del sistema operativo. & No \\ \hline
+\emph{r28} & \emph{\$gp} & Global Pointer – Puntero a la zona de la memoria estática del programa. & Si \\ \hline
+\emph{r29} & \emph{\$sp} & Stack Pointer – Puntero al tope de la pila. & Si \\ \hline
+\emph{r30} & \emph{\$fp} & Frame Pointer – Puntero al marco actual de la pila. & Si \\ \hline
+\emph{r31} & \emph{\$ra} & Return Address – Dirección de retorno en un llamado a una subrutina. & Si \\ \hline
+		
+\end{tabular}	
+}
+\begin{itemize}
+\item Preservado implica que los registros deben devolverse \emph{inalterados} desde una subrutina.
+\item \emph{\$s0-\$s7} representan las variables locales de la subrutina / programa.
+\item \emph{\$t0-\$t9} son registros para almacenar resultados auxiliares.
+\item Este uso de registros es el recomendado y esta normalizado
+\item Si una subrutina altera el valor de algún registro que debe ser preservado, debe conservar el valor original para poder restaurarlo.
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Ejemplo}
+\tiny{
+\begin{block}{}
+\begin{lstlisting}[language=WinMIPS64,basicstyle=\ttfamily,keywordstyle=\color{blue}]
+               .data
+               base: .word 16
+               exponente: .word 4
+               result: .word 0
+			   
+               .text
+               ld $a0, base($0)
+               ld $a1, exponente($0)
+               jal a_la_potencia
+               sd $v0, result($0)
+               halt
+
+a_la_potencia: daddi $v0, $0, 1
+lazo:          beqz $a1, terminar
+               daddi $a1, $a1, -1
+               dmul $v0, $v0, $a0
+               j lazo
+terminar:      jr $ra
+\end{lstlisting}
+\end{block}
+}
+\end{frame}
+
+
+\end{document}
+

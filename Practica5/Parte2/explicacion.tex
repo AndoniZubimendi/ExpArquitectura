@@ -1,0 +1,326 @@
+\documentclass{beamer}
+\special{landscape}
+
+%\usetheme{Berlin}
+\usetheme{Warsaw}
+
+%\usecolortheme{seahorse}
+%\usefonttheme[onlysmall]{structurebold}
+
+\setbeamertemplate{headline}[split]
+\setbeamertemplate{footline}[default]
+\setbeamertemplate{footline}[miniframes theme]
+
+\mode<presentation>
+\usepackage[spanish]{babel}
+\usepackage{beamerthemesplit}
+\usepackage{color}      % use if color is used in text
+
+\usepackage[utf8]{inputenc}
+
+% Comandos en modo Verbatim
+%\usepackage{fancyvrb}
+
+\usepackage{listings}
+
+
+%%
+%% WinMIPS64 definition (c) 2013
+\lstdefinelanguage{WinMIPS64}
+ {morekeywords={%
+cvt.l.d,cvt.d.l,mfc1,mtc1,DADD,DADDI,ANDI,XORI,HALT,BEQ,BNEQ,LD,NOP,DMUL,DSUB,AND,DDIV,%
+	JAL,J,DSLL,BNEZ,SD},%
+ otherkeywords={.word,.code,.data,.text},%
+   sensitive=false,%
+   morecomment=[l]{;},%
+   morestring=[b]",%
+ }
+
+\lstset{emph={%  
+    F0,F1,F2,F3,F4,F5,F6,F7,F8,F9,F10,F11,F12,F13,F14,F15,F16,F17,F18,F19%
+    F20,F21,F22,F23,F24,F25,F26,F27,F28,F29,F30,F31%
+    f0,f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15,f16,f17,f18,f19%
+    f20,f21,f22,f23,f24,f25,f26,f27,f28,f29,f30,f31%
+    R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R12,R13,R14,R15,R16,R17,R18,R19%
+    R20,R21,R22,R23,R24,R25,R26,R27,R28,R29,R30,R31%
+    r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19%
+    r20,r21,r22,r23,r24,r25,r26,r27,r28,r29,r30,r31%
+	$0,$zero,$s0,$s1,$s2,$s3,$s4,$s5,$s6,$s7,$sp,$t1%
+    },emphstyle={\color{red}\bfseries}%
+}%
+
+%\lstset{emph={%  
+%    .code,.data,.word
+%    },emphstyle={\color{green}\bfseries}%
+%}%
+\title{Practica 5 - WinMIPS64}
+
+\AtBeginSection[]
+
+\begin{document}
+
+\section{Generación y manejo de pila}
+\subsection{Introducción}
+\begin{frame}
+\frametitle{Introducción}
+En esta arquitectura no tenemos soporte nativo para el manejo de pilas. \\
+Veamos en que consiste el manejo de pila del MSX88:
+\begin{itemize}
+\item Tiene un registro SP, que se usa solo para el manejo de la pila y que inicialmente vale 08000h.
+\item Tenemos una instrucción PUSH que nos permite \emph{apilar} valores de 16 bits en la misma.
+\item Tenemos una instrucción POP que nos permite \emph{desapilar} valores de 16 bits de la misma.
+\item La pila también se utiliza para el manejo de subrutinas, pero ya tenemos un reemplazo para eso.
+\end{itemize}
+\end{frame}
+
+\subsection{Inicialización}
+\begin{frame}[fragile]
+\frametitle{Pila}
+\begin{itemize}
+\item El MSX88 posee un registro especifico para la Pila
+\item WinMIPS64 posee 32 registros de proposito general, podemos elegir uno y usarlo explusivamente para la pila. 
+\item La convención de nombres de registros ya vistos ya contempla al registro \emph{r29} como el registro \emph{\$sp}.
+\item El registro SP esta inicializado en 08000h, debemos inicializar el registro de pila a un valor adecuado.
+\item Podemos inicializar el registro \emph{\$sp} en 0400h, que es la posición de memoria de datos más alta que tenemos en WinMIPS64.
+\end{itemize}
+
+\begin{block}{}
+\begin{lstlisting}[language=WinMIPS64,basicstyle=\ttfamily,keywordstyle=\color{blue}]
+    .code
+    daddi $sp, $0, 0x400
+    ...
+\end{lstlisting}
+\end{block}
+
+\end{frame}
+
+\subsection{Apilando Valores}
+\begin{frame}
+\frametitle{Apilar}
+La instrucción PUSH del MSX88 es la encargada de apilar un valor en la pila. Veamos en que consiste apilar un valor:
+\begin{itemize}
+\item $(SP) \xleftarrow{} (SP) - 2$ \emph{; Decremento Puntero de pila}
+\item $[SP+1:SP] \xleftarrow{} (fuente)$ \emph{; Guardo valor en la pila}
+\end{itemize}
+Para simular esta operación deberiamos:
+\begin{itemize}
+\item Decrementar en 8 el puntero de pila. ¿Por qué 8?
+\item Guardar en la posición de memoria del puntero de pila el valor.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Apilar - Detalle}
+
+
+\begin{block}{Apilando el valor del registro \$t1}
+\begin{lstlisting}[language=WinMIPS64,basicstyle=\ttfamily,keywordstyle=\color{blue}]
+    ...
+    daddi $sp, $sp, -8
+    sd $t1, 0($sp)      ; Guardo en la pila
+    ...
+\end{lstlisting}
+\end{block}
+
+\end{frame}
+
+
+
+\subsection{Sacando valores de la pila}
+\begin{frame}
+\frametitle{Desapilar}
+La instrucción POP del MSX88 es la encargada de desapilar un valor de la pila. Veamos en que consiste:
+\begin{itemize}
+\item $(fuente) \xleftarrow{} [SP+1:SP]$ \emph{; Guardo valor de la pila}
+\item $(SP) \xleftarrow{} (SP) + 2$ \emph{; Incremento el Puntero de pila}
+\end{itemize}
+Para simular esta operación deberiamos:
+\begin{itemize}
+\item Leer el dato de la posición de memoria del puntero de pila y guardarlo en un registro.
+\item Incrementar en 8 el puntero de pila.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Desapilar - Detalle}
+
+
+\begin{block}{Desapilando en el registro \$s1}
+\begin{lstlisting}[language=WinMIPS64,basicstyle=\ttfamily,keywordstyle=\color{blue}]
+    ...
+    ld $s1, 0($sp)      ; Leo desde la pila
+    daddi $sp, $sp, +8
+    ...
+\end{lstlisting}
+\end{block}
+
+\end{frame}
+
+
+\subsection{Multiples Valores}
+
+\subsection{Sacando valores de la pila}
+\begin{frame}[fragile]
+\frametitle{Multiples valores}
+Veamos que pasa si se apilan varios valores seguidos:
+
+\tiny{
+\begin{block}{}
+\begin{lstlisting}[language=WinMIPS64,basicstyle=\ttfamily,keywordstyle=\color{blue}]
+    ...
+    daddi $sp, $sp, -8
+    sd $s1, 0($sp)      ; Apilo s1
+	
+    daddi $sp, $sp, -8
+    sd $s2, 0($sp)      ; Apilo s2
+	
+    daddi $sp, $sp, -8
+    sd $s3, 0($sp)      ; Apilo s3
+	
+    daddi $sp, $sp, -8
+    sd $s4, 0($sp)      ; Apilo s4
+
+    ...
+\end{lstlisting}
+\end{block}
+}
+
+Podriamos agrupar los \emph{daddi} y ver si podemos tener menos instrucciones.
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Multiples valores}
+\tiny{
+\begin{block}{}
+\begin{lstlisting}[language=WinMIPS64,basicstyle=\ttfamily,keywordstyle=\color{blue}]
+    ...
+    daddi $sp, $sp, -32 ; Reservo 32 bytes
+    sd $s1, 24($sp) ; Apilo s1
+    sd $s2, 16($sp) ; Apilo s2
+    sd $s3, 8($sp)  ; Apilo s3
+    sd $s4, 0($sp)  ; Apilo s4
+    ...
+\end{lstlisting}
+\end{block}
+}
+\begin{itemize}
+\item Ajustamos \emph{\$sp} al inicio, le restamos 8 por cada registro a apilar.
+\item Luego guardamos cada registro, desplazandolo de a 8 posiciones.
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Multiples valores - Continuación}
+Y para desapilar, lo hacemos de manera similar
+\tiny{
+\begin{block}{}
+\begin{lstlisting}[language=WinMIPS64,basicstyle=\ttfamily,keywordstyle=\color{blue}]
+    ...
+
+    ld $s1, 24($sp) ; Restauro s1
+    ld $s2, 16($sp) ; Restauro s2
+    ld $s3, 8($sp)  ; Restauro s3
+    ld $s4, 0($sp)  ; Restauro s4
+    daddi $sp, $sp, +32
+    ...
+\end{lstlisting}
+\end{block}
+}
+\end{frame}
+
+
+\subsection{Prólogo y Epílogo de Subrutinas}
+
+\begin{frame}
+\frametitle{Pilas y Subrutina}
+Toda subrutina se dividirá siempre en tres partes
+\begin{itemize}
+\item \emph{Prólogo}: se resguarda en la pila todos los registros que deban ser preservados
+\item \emph{Cuerpo} de la subrutina: con el código propio de la misma
+\item \emph{Epílogo}: se restauran los registros preservados en el prólogo
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{}
+\tiny{
+\begin{block}{}
+\begin{lstlisting}[language=WinMIPS64,basicstyle=\ttfamily,keywordstyle=\color{blue}]
+
+ subrutina:
+    daddi $sp, $sp, -16 
+    sd $ra, 8($sp) ; Apilo ra
+    sd $s0, 0($sp)  ; Apilo s0
+	
+    ...
+
+    ld $ra, 8($sp)  ; Restauro ra
+    ld $s0, 0($sp)  ; Restauro s0
+    daddi $sp, $sp, +16
+    jr $ra  ; $ra tiene valor de retorno
+\end{lstlisting}
+\end{block}
+}
+\begin{itemize}
+\item Si no se modifican los registros \emph{\$s0} a \emph{\$s7}, no es necesario guardarlos
+\item Una subrutina sencilla podria tener un prólogo y epílogo vacio
+\end{itemize}
+
+\end{frame}
+
+\subsection{Anidamiento de subrutinas}
+\begin{frame}
+\frametitle{Anidamiento de Subrutinas}
+
+\begin{itemize}
+\item Si una subrutina llama a otra subrutina, va a alterar el valor del registro \emph{\$ra}. Por lo tanto debemos preservar el valor que recibimos de \emph{\$ra}.
+\item Si no llama a otra subrutina, no es necesario que guarde el valor contenido en \emph{\$ra}.
+\item Esto es valido tanto para subrutinas que se llamen a si mismas (recursivas) como para subrutinas que llamen a otras.
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Ejemplo}
+\tiny{
+\begin{block}{}
+\begin{lstlisting}[language=WinMIPS64,basicstyle=\ttfamily,keywordstyle=\color{blue}]
+.data
+valor: .word 10
+result: .word 0
+.text
+    daddi $sp, $0, 0x400 ; Inicializa $sp
+    ld $a0, valor($0)
+    jal factorial
+    sd $v0, result($0)
+    halt
+factorial: daddi $sp, $sp, -16
+           sd $ra, 0($sp)
+           sd $s0, 8($sp)
+           beqz $a0, fin_rec
+           dadd $s0, $0, $a0
+           daddi $a0, $a0, -1
+           jal factorial
+           dmul $v0, $v0, $s0
+           j fin		   
+fin_rec:   daddi $v0, $0, 1
+fin:       ld $s0, 8($sp)
+           ld $ra, 0($sp)
+           daddi $sp, $sp, 16
+           jr $ra		   
+\end{lstlisting}
+\end{block}
+}
+
+\end{frame}
+
+
+
+\end{document}
+
