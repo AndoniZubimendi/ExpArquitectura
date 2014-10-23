@@ -8,3 +8,4 @@
 *.toc
 *.vrb
 *.aux
+.DS_Store
