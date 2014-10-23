@@ -145,7 +145,7 @@ Importante: El número se trunca, no se redondea
 \begin{block}{Copiar el valor de f3 a r8}
 \begin{lstlisting}[language=WinMIPS64,basicstyle=\ttfamily,keywordstyle=\color{blue}]
 cvt.l.d f4, f3
-mfc1 r8, f3
+mfc1 r8, f4
 \end{lstlisting}
 \end{block}
 
@@ -158,9 +158,9 @@ mfc1 r8, f3
 \frametitle{Saltos condicionales en Punto Flotante}
 La unidad de punto flotante posee un flag (FP):
 \begin{itemize}
-\item \emph{c.lt.d fd, ff}: Compara ff con fg, dejando FP=1 si ff es menor que fg, sino FP=0
-\item \emph{c.le.d fd, ff}: Compara ff con fg, dejando flag FP=1 si ff es menor o igual que fg, sino FP=0
-\item \emph{c.eq.d fd, ff}: Compara ff con fg, dejando flag FP=1 si ff es igual que fg, sino FP=0
+\item \emph{c.lt.d fd, ff}: Compara fd con ff, dejando FP=1 si fd es menor que ff, sino FP=0
+\item \emph{c.le.d fd, ff}: Compara fd con ff, dejando flag FP=1 si fd es menor o igual que ff, sino FP=0
+\item \emph{c.eq.d fd, ff}: Compara fd con ff, dejando flag FP=1 si fd es igual que ff, sino FP=0
 \end{itemize}
 
 Podemos usar el flag FP con las siguientes instrucciones:
@@ -264,7 +264,7 @@ En lugar de usar r0-r31 es más conveniente darle nombre más significativos a l
 \begin{tabular}{| c | c | p{6.5cm} | c |}
 \hline
 Registro & Nombre & Uso & Preservado \\ \hline
-\emph{r0} & \emph{\$zero} & Siempre tiene el valor 0 y no se puede cambiar. & No \\ \hline
+\emph{r0} & \emph{\$zero}, {\$0} & Siempre tiene el valor 0 y no se puede cambiar. & No \\ \hline
 \emph{r1} & \emph{\$at} & Assembler Temporary – Reservado para ser usado por el ensamblador. & No \\ \hline
 \emph{r2 - r3} & \emph{\$v0 - \$v1} & Valores de retorno de la subrutina llamada. & No \\ \hline
 \emph{r4 - r7} & \emph{\$a0 - \$a3} & Argumentos pasados a la subrutina llamada. & No \\ \hline
