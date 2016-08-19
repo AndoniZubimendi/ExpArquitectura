@@ -14,11 +14,11 @@
    height="297mm"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.2 r9819"
+   inkscape:version="0.91 r13725"
    inkscape:export-filename="imagen_008.png"
    inkscape:export-xdpi="600"
    inkscape:export-ydpi="600"
-   sodipodi:docname="programa-8.svg">
+   sodipodi:docname="imagen_008.svg">
   <defs
      id="defs4">
     <linearGradient
@@ -79,14 +79,14 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.4142136"
      inkscape:cx="416.95775"
-     inkscape:cy="777.38844"
+     inkscape:cy="890.52552"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1920"
-     inkscape:window-height="1152"
-     inkscape:window-x="-3"
-     inkscape:window-y="-3"
+     inkscape:window-width="1280"
+     inkscape:window-height="687"
+     inkscape:window-x="0"
+     inkscape:window-y="1"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
@@ -96,7 +96,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -504,11 +504,11 @@
            sodipodi:role="line">BX</tspan></text>
     </g>
     <rect
-       style="fill:none;stroke:#000000;stroke-width:0.31544228pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="fill:none;stroke:#000000;stroke-width:0.3154423pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        id="rect4763"
        width="60.524075"
        height="12.997958"
-       x="47.140121"
+       x="34.412201"
        y="56.014721" />
     <text
        xml:space="preserve"

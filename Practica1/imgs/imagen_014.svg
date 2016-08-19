@@ -14,11 +14,11 @@
    height="297mm"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.2 r9819"
-   inkscape:export-filename="imagen_014.png"
+   inkscape:version="0.91 r13725"
+   inkscape:export-filename="imagen_016.png"
    inkscape:export-xdpi="600"
    inkscape:export-ydpi="600"
-   sodipodi:docname="programa-14.svg">
+   sodipodi:docname="imagen_014.svg">
   <defs
      id="defs4">
     <linearGradient
@@ -79,14 +79,14 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.4142136"
      inkscape:cx="416.95775"
-     inkscape:cy="777.38844"
+     inkscape:cy="890.52552"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1920"
-     inkscape:window-height="1152"
-     inkscape:window-x="-3"
-     inkscape:window-y="-3"
+     inkscape:window-width="1280"
+     inkscape:window-height="687"
+     inkscape:window-x="0"
+     inkscape:window-y="1"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
@@ -96,7 +96,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -463,8 +463,8 @@
     </g>
     <g
        id="g4701"
-       transform="translate(-24.446714,-518.38877)"
-       inkscape:export-filename="imagen_009.png"
+       transform="translate(-20.204073,-519.09588)"
+       inkscape:export-filename="imagen_015.png"
        inkscape:export-xdpi="600"
        inkscape:export-ydpi="600">
       <path
@@ -472,13 +472,13 @@
          inkscape:connector-curvature="0"
          id="path3115"
          d="M 402.14286,597.36218 450,598.07647"
-         style="fill:none;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:none;marker-end:url(#Arrow1Lend)" />
+         style="fill:none;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:none;marker-end:url(#Arrow1Lend)" />
       <text
          sodipodi:linespacing="125%"
          id="text4697"
          y="594.14795"
          x="415.35715"
-         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;line-height:125%;font-family:'Bitstream Vera Sans';letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none"
          xml:space="preserve"><tspan
            y="594.14795"
            x="415.35715"
@@ -486,7 +486,7 @@
            sodipodi:role="line">SP</tspan></text>
     </g>
     <g
-       transform="translate(-78.415572,-412.24123)"
+       transform="translate(-78.415572,-286.37623)"
        id="g4701-6"
        inkscape:export-filename="imagen_011.png"
        inkscape:export-xdpi="600"
@@ -510,12 +510,12 @@
            sodipodi:role="line">BX</tspan></text>
     </g>
     <rect
-       style="fill:none;stroke:#000000;stroke-width:0.30894513pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="fill:none;stroke:#000000;stroke-width:0.32513318pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        id="rect4763"
-       width="58.05653"
-       height="12.997958"
-       x="47.140121"
-       y="243.39801" />
+       width="64.400253"
+       height="12.977723"
+       x="30.179678"
+       y="243.40817" />
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
