@@ -278,6 +278,7 @@ Veamos un ejemplo en el simulador
  \item El encargado de administrar las interrupciones es el Controlador Programable de Interrupciones (PIC)
  \item Los dispositivos que pueden interrumpir al procesador se conectan directamente al PIC, el PIC se conecta a la CPU.
  \item El PIC puede manejar 8 peticiones de interrupción independentes, numeradas de 0 a 7 (INT0 a INT7)
+ \item El PIC ademas de la señal de interrupción, coloca en el bus de datos un identificador de la interrupción (vector)
  \item Se atiende una interrupción a la vez. El número de interrupción es la prioridad, teniendo prioridad los números más bajos.
  \item El manejador de la interrupción llamado deberá indicarle al PIC cuando termina de procesar la interrupción. 
  \item Hasta que no se termine de atender a esta interrupción no se podrá atender a la siguiente interrupción.
