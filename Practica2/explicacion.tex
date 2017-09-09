@@ -294,8 +294,8 @@ Veamos un ejemplo en el simulador
  \begin{itemize}
   \item \emph{INT0} Conectado a la tecla F-10
   \item \emph{INT1} TIMER, Contador de Eventos
-  \item \emph{INT2} HANDSHAKE (lo vemos mas adelante)
-  \item \emph{INT3} Controlador de DMA (lo vemos mas adelante)
+  \item \emph{INT2} HANDSHAKE, USART (lo vemos mas adelante)
+  \item \emph{INT3} Controlador de DMA, USART (lo vemos mas adelante)
  \end{itemize}
 \end{itemize}
 
@@ -386,7 +386,7 @@ El controlador de interrupciones debe tener las siguientes condiciones
 \frametitle{¿Como programo el manejador de interrupción?}
 \begin{block}{Ejemplo}
 \begin{verbatim}
-ORG 2000H
+ORG 3000H
 ; Manejador de F-10
 RUTINA_F10: INC  CONTADOR
             PUSH AX
