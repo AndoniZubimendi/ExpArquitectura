@@ -22,33 +22,30 @@
 % Comandos en modo Verbatim
 %\usepackage{fancyvrb}
 
-\title{Practica 3 - Parte 3 - USART}
-%\author{Juan Antonio Zubimendi\\azubimendi@lifia.info.unlp.edu.ar}
+\title{Práctica 3 - Parte 3 - USART}
 
 \AtBeginSection[]
 
 \begin{document}
 
 \begin{frame}
-%\frametitle{Presentación}
 \titlepage
 \end{frame}
 
-\section{USART - Introduccion}
+\section{USART - Introducción}
 \subsection{Introducción}
 \begin{frame}
 \frametitle{USART}
-%\begin{block}{Slot Accounting System}
 \begin{itemize}
  \item Convertidor paralelo-serie y serie-paralelo.
  \item Permite a la CPU comunicarse con dispositivos serie
  \item Posee tres registros, de 8 bits.
   \begin{itemize}
-   \item DIN: Registro de entrada, recibir datos de la linea serie.
-   \item DOUT: Registro de salida, escribir datos a enviar por linea serie.
+   \item DIN: Registro de entrada, recibir datos de la línea serie.
+   \item DOUT: Registro de salida, escribir datos a enviar por línea serie.
    \item CTRL: Registro de Control (escritura) y estado (lectura).
   \end{itemize}
- \item La recepcion y envio de datos son independientes
+ \item La recepción y envío de datos son independientes
  \item Los tres registros estan a partir de la posición 60h. 
   \begin{itemize}
       \item 60h = DIN
@@ -58,17 +55,17 @@
 \end{itemize}
 \end{frame}
 
-\subsection{Interrupcion}
+\subsection{Interrupción}
 \begin{frame}
 \frametitle{USART - Interrupciones}
 %\begin{block}{Slot Accounting System}
 \begin{itemize}
  \item La USART puede generar 2 interrupciones
   \begin{itemize}
-   \item INT 2: Cuando hay un caracter para ser recibido.
-   \item INT 3: Cuando esta listo para enviar un caracter.
+   \item INT 2: Cuando hay un carácter para ser recibido.
+   \item INT 3: Cuando esta listo para enviar un carácter.
   \end{itemize}
-  \item En la practica no se va a considerar el uso de interrupciones
+  \item En la práctica no se va a considerar el uso de interrupciones
 \end{itemize}
 \end{frame}
 
@@ -79,13 +76,13 @@
 \begin{itemize}
  \item Transmite 8bits por dato.
  \item Dos velocidades: V1: 6 baudios, V2: 18 baudios
- \item Comunicacion Sincrona o asincrona.
+ \item Comunicación Síncrona o asíncrona.
   \begin{itemize}
-   \item Sincrona: 1 caracter de sincronismo, puede reconocer e insertar caracteres de sincronismo.
-   \item Asincrono: Sin paridad, 1 bit de parada y 1 bit de arranque.
+   \item Síncrona: 1 carácter de sincronismo, puede reconocer e insertar caracteres de sincronismo.
+   \item Asíncrona: Sin paridad, 1 bit de parada y 1 bit de arranque.
   \end{itemize}
- \item La recepcion y envio de datos son independientes
- \item Estas caracteristicas se configuran en el registro de control
+ \item La recepción y envío de datos son independientes
+ \item Estas características se configuran en el registro de control
 \end{itemize}
 \end{frame}
 
@@ -100,14 +97,14 @@
 \begin{itemize}
  \item El registro de control 
  \begin{itemize}
-   \item Sy/As: 0 = Sincrona / 1 = Asincrona
+   \item Sy/As: 0 = Síncrona / 1 = Asíncrona
    \item Vb: Velocidad: 0 = 6 baudios/ 1 = 18 baudios
    \item TxEN: TxRDY 0 = inactivo / 1 = activo
    \item RxEN: RxRDY 0 = inactivo / 1 = activo
    \item DTR: Data Terminal Ready, 0 inactivo, 1 activo
    \item RTS: Request to Send, 0 inactivo, 1 activo
    \item ER: Error Reset, 1 = Resetea flags de errores
-   \item Sync: 1 = Insercion y busqueda de caracteres de sincronismo (solo si Sy/AS = 0)
+   \item Sync: 1 = Inserción y búsqueda de caracteres de sincronismo (solo si Sy/AS = 0)
   \end{itemize}
 \end{itemize}
 \end{frame}
@@ -121,25 +118,25 @@
 \begin{itemize}
  \item El registro de estado 
  \begin{itemize}
-   \item DSR: Indica estado de linea DSR
-   \item SYNDET: Si Sy/AS = 0, y Sync = 1, indica recepcion de caracter de sincronizacion
+   \item DSR: Indica estado de línea DSR
+   \item SYNDET: Si Sy/AS = 0, y Sync = 1, indica recepción de carácter de sincronizacion
    \item CTS: Indica estado de entrada CTS
-   \item FE: Indica error de recepcion, bits de parada incorrectos
-   \item OE: 1 = Se recibio un caracter y todavia no se habia leido el anterior 
+   \item FE: Indica error de recepción, bits de parada incorrectos
+   \item OE: 1 = Se recibió un carácter y todavía no se habia leido el anterior 
    \item RxRDY: 1 = El registro de entrada tiene un dato
    \item TxRDY: 1 = El registro salida esta vacio, listo
    \end{itemize}
 \end{itemize}
 \end{frame}
 
-\subsection{Lineas de Datos de USART}
+\subsection{Líneas de Datos de USART}
 \begin{frame}[fragile]
 \frametitle{Impresora Serie}
 \begin{itemize}
  \item USART posee esta lineas
  \begin{itemize}
-  \item rxd: Linea de salida, transmision serie 
-  \item txd: Linea de entrada, recepcion serie
+  \item rxd: línea de salida, transmisión serie 
+  \item txd: línea de entrada, recepción serie
   \item dsr: Data Set Ready, el dispositivo conectado esta listo para recibir/ enviar datos
   \item rts: Request to Send, la USART quiere enviar datos
   \item cts: Clear To Send, el dispositivo esta listo para recibir datos
@@ -148,27 +145,28 @@
 \end{frame}
 
 \section{Impresora Serie}
-\subsection{Introduccion}
+\subsection{Introducción}
 \begin{frame}[fragile]
 \frametitle{Impresora Serie}
 \begin{itemize}
  \item El simulador debe estar en la Configuración 4
  \item Utiliza una interfaz serie RS-232 simplificada
- \item Puede recibir hasta 5 caracteres
- \item Caracteristicas de Comunicacion
+ \item Puede recibir hasta 5 caracteres (buffer)
+ \item Caracteristicas de Comunicación
  \begin{itemize}
-  \item Caracteres de 8 bits
+  \item Comunicacion Asincronica
+  \item Carácteres de 8 bits
   \item Dos velocidades (6 baudios y 18 baudios)
   \item Sin paridad
   \item Un bit de arranque (0)
   \item Un bit de parada (1)
  \end{itemize}
-  \item Dos protocolos de Comunicacion
+  \item Dos protocolos de Comunicación
 \begin{itemize}
  \item Software XON/XOFF
  \item Hardware DTR
 \end{itemize}
-
+\item Cambiamos la velocidad de la impresora con el comando ''vi''
 \end{itemize}
 \end{frame}
 
@@ -186,25 +184,25 @@
 \begin{itemize}
  \item La conexion USART e Impresora usa las siguientes lineas:
  \begin{itemize}
-  \item TxD: Linea de Transmisión serie, la CPU transmite los datos a imprimir
-  \item RxD: Linea de recepcion serie, los datos enviados desde la impresora a la CPU
-  \item DSR: Linea de salida que habilita/inhabilita la transmision de datos a la impresora
+  \item TxD: línea de Transmisión serie, la CPU transmite los datos a imprimir
+  \item RxD: línea de Recepción serie, los datos enviados desde la impresora a la CPU
+  \item DSR: línea de salida que habilita/inhabilita la transmisión de datos a la impresora
 \end{itemize}
 \item Las lineas de RTS y CTS de la USART estan conectadas entre si (no interviene la impresora)
 \end{itemize}
 \end{frame}
 
-\section{Protocolos de Comunicacion}
+\section{Protocolos de Comunicación}
 \subsection{Software XON/XOFF}
 \begin{frame}[fragile]
 \frametitle{XON/XOFF}
 \begin{itemize}
  \item Configurar la impresora para usar el protocolo DTR usando el comado `` pi x''
  \item Utiliza unicamente TxD y RxD.
- \item Cuando el buffer de recepecion esta lleno, la impresora envia el caracter XOFF a traves de la linea TxD, para detener la transmision de datos
- \item Cuando hay espacio en el buffer, la impresora envia el caracter XON, avisando que se puede seguir enviando caracteres
- \item El Caracter XOFF es 13h
- \item El Caracter XON es 11h
+ \item Cuando el buffer de recepeción esta lleno, la impresora envía el carácter XOFF a través de la línea TxD, para detener la transmisión de datos
+ \item Cuando hay espacio en el buffer, la impresora envía el carácter XON, avisando que se puede seguir enviando caracteres
+ \item El Carácter XOFF es 13h
+ \item El Carácter XON es 11h
  \item Puede ser mediante Interrupciones o consulta de estado
 \end{itemize}
 
@@ -215,9 +213,9 @@
 \frametitle{DTR}
 \begin{itemize}
  \item Configurar la impresora para usar el protocolo DTR usando el comado `` pi d'' 
- \item La linea DTR indica si se debe iniciar/suspender la transmision de datos.
- \item Si el buffer esta lleno, la impresora pone 0 en la linea DTR.
- \item Si el buffer tiene lugar, la impresora pone 1 en la linea DTR.
+ \item La línea DTR indica si se debe iniciar/suspender la transmisión de datos.
+ \item Si el buffer esta lleno, la impresora pone 0 en la línea DTR.
+ \item Si el buffer tiene lugar, la impresora pone 1 en la línea DTR.
  \item Puede ser mediante Interrupciones o consulta de estado
 \end{itemize}
 
@@ -234,8 +232,10 @@
  \begin{itemize}
  \item Error reset (bit 6 en 1)
  \item DTR activado (bit 4 en 1)
- \item Comunicacioón asincrona (bit 0 en 1)
+ \item Comunicación asíncrona (bit 0 en 1)
+ \item Velocidad: 6 baudios (bit 1 = 0).
 \end{itemize}
+\item Utilizamos velocidad de 6 baudios, si cambiamos la velocidad, hay que cambiar la velocidad de la impresora con el comando ''vi''
 \end{itemize}
 \end{frame}
 
@@ -259,12 +259,12 @@
 \begin{frame}[fragile]
 \frametitle{Como usar la Impresora con DTR}
 \begin{itemize}
- \item  Consultamos para saber si esta lista para recibir un caracter. Se deben dar estas condiciones:
+ \item  Consultamos para saber si esta lista para recibir un carácter. Se deben dar estas condiciones:
  \begin{itemize}
-  \item Data Set Ready = 1, la impresora debe estar lista para recibir caracter (bit de estado 7)
+  \item Data Set Ready = 1, la impresora debe estar lista para recibir carácter (bit de estado 7)
   \item TxRDY = 1, la USART debe estar lista para transmitir (bit de estado 0) 
  \end{itemize}
-\item Transmitimos el siguiente caracter 
+\item Transmitimos el siguiente carácter 
 \item Volvemos a empezar si nos quedan mas caracteres a enviar a la impresora.
 \end{itemize}
 
@@ -291,14 +291,14 @@ TEST: IN AL, CTRL
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Envio del caracter}
-\begin{block}{Enviar el caracter}
+\frametitle{Envio del carácter}
+\begin{block}{Enviar el carácter}
  \begin{verbatim}
         DOUT EQU 61H
          
         ...
            
-       MOV AL, [BX] ; Proximo caracter
+       MOV AL, [BX] ; Proximo carácter
        OUT DOUT, AL
              
  \end{verbatim}
@@ -311,7 +311,7 @@ TEST: IN AL, CTRL
 \frametitle{Ejercicio}
 
 \begin{itemize}
- \item Veamos el Ejercicio 10 de la Practica
+ \item Veamos el Ejercicio 10 de la Práctica
 \end{itemize}
 
 \end{frame}
@@ -328,9 +328,10 @@ TEST: IN AL, CTRL
  \begin{itemize}
  \item Error reset activo (bit 6)
  \item DTR activado (bit 4)
- \item Comunicacion asincrona (bit 0). 
+ \item Comunicación asíncrona (bit 0). 
+ \item Velocidad: 6 baudios (bit 1 = 0).
 \end{itemize}
-
+\item Utilizamos velocidad de 6 baudios, si cambiamos la velocidad, hay que cambiar la velocidad de la impresora con el comando ''vi''
  \end{itemize}
 \end{frame}
 
@@ -354,17 +355,17 @@ TEST: IN AL, CTRL
 \frametitle{Como usar la Impresora con XON/XOFF}
 
 \begin{itemize}
-\item Esperamos a que la USART este lista para enviar un caracter. 
+\item Esperamos a que la USART este lista para enviar un carácter. 
 \begin{itemize}
 \item Es decir TxRDY cambia a 1 
 \end{itemize}
-\item Enviamos el caracter a imprimir. 
-\item Verificar si recibimos un caracter
+\item Enviamos el carácter a imprimir. 
+\item Verificar si recibimos un carácter
 \begin{itemize}
  \item Es decir RxRDY cambia a 1
 \end{itemize}
-\item Si no recibimos un caracter, podemos enviar el siguiente caracter
-\item Si recibimos un caracter, puede ser XON o XOFF
+\item Si no recibimos un carácter, podemos enviar el siguiente carácter
+\item Si recibimos un carácter, puede ser XON o XOFF
 \begin{itemize}
 \item Si recibimos XON, podemos seguir imprimiendo.
 \item Si recibimos XOFF, hay que esperar hasta recibir XON para poder imprimir.
@@ -391,14 +392,14 @@ TEST:  IN AL, CTRL
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Envio del caracter}
-\begin{block}{Enviar el caracter}
+\frametitle{Envio del carácter}
+\begin{block}{Enviar el carácter}
  \begin{verbatim}
         DOUT EQU 61H
          
         ...
            
-       MOV AL, [BX] ; Proximo caracter
+       MOV AL, [BX] ; Proximo carácter
        OUT DOUT, AL
              
  \end{verbatim}
@@ -407,7 +408,7 @@ TEST:  IN AL, CTRL
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Recibimos caracter?}
+\frametitle{Recibimos carácter?}
 \begin{block}{Hay un dato disponible?}
  \begin{verbatim}
         CTRL EQU 62H
@@ -423,13 +424,13 @@ TEST:  IN AL, CTRL
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Leer caracter}
+\frametitle{Leer carácter}
 \begin{block}{Leer el dato disponible}
  \begin{verbatim}
         DIN EQU 60H
          
         ...
-        IN AL, DIN ; AL tiene el caracter recibido
+        IN AL, DIN ; AL tiene el carácter recibido
         
  \end{verbatim}
 \end{block}
@@ -442,7 +443,7 @@ TEST:  IN AL, CTRL
 \frametitle{Ejercicio}
 
 \begin{itemize}
- \item Veamos el Ejercicio 11 de la Practica
+ \item Veamos el Ejercicio 11 de la Práctica
 \end{itemize}
 
 \end{frame}
