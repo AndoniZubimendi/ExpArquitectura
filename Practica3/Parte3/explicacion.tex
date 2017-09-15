@@ -172,7 +172,7 @@
 \end{itemize}
 \end{frame}
 
-\subsection{Introduccion}
+\subsection{Conexión}
 \begin{frame}[fragile]
 \frametitle{Conexion USART - Impresora Serie}
 \begin{center}
@@ -181,8 +181,6 @@
 
 \end{frame}
 
-
-\subsection{Introduccion}
 \begin{frame}[fragile]
 \frametitle{Conexion USART - Impresora Serie}
 \begin{itemize}
@@ -190,7 +188,7 @@
  \begin{itemize}
   \item TxD: Linea de Transmisión serie, la CPU transmite los datos a imprimir
   \item RxD: Linea de recepcion serie, los datos enviados desde la impresora a la CPU
-  \item DTR: Linea de salida que habilita/inhabilita la transmision de datos a la impresora
+  \item DSR: Linea de salida que habilita/inhabilita la transmision de datos a la impresora
 \end{itemize}
 \item Las lineas de RTS y CTS de la USART estan conectadas entre si (no interviene la impresora)
 \end{itemize}
@@ -225,10 +223,102 @@
 
 \end{frame}
 
+\section{Protocolo DTR por Consulta de Estado}
 
-\section{Uso por Consulta de Estado}
+\subsection{Configuración}
+\begin{frame}[fragile]
+\frametitle{Como configurar la Impresora con DTR}
+\begin{itemize}
+ \item El simulador debe estar en la configuración 4
+ \item Se configura la USART con el numero binario 01010001
+ \begin{itemize}
+ \item Error reset (bit 6 en 1)
+ \item DTR activado (bit 4 en 1)
+ \item Comunicacioón asincrona (bit 0 en 1)
+\end{itemize}
+\end{itemize}
+\end{frame}
 
-\subsection{Protocolo XON-XOFF}
+\begin{frame}[fragile]
+\frametitle{Ejemplo}
+\begin{block}{Configuración}
+ \begin{verbatim}
+         CTRL EQU 62H
+         
+           ...
+           
+         MOV AL, 01010001B ; = 51H
+         OUT CTRL, AL
+ \end{verbatim}
+\end{block}
+
+\end{frame}
+
+\subsection{Impresión}
+
+\begin{frame}[fragile]
+\frametitle{Como usar la Impresora con DTR}
+\begin{itemize}
+ \item  Consultamos para saber si esta lista para recibir un caracter. Se deben dar estas condiciones:
+ \begin{itemize}
+  \item Data Set Ready = 1, la impresora debe estar lista para recibir caracter (bit de estado 7)
+  \item TxRDY = 1, la USART debe estar lista para transmitir (bit de estado 0) 
+ \end{itemize}
+\item Transmitimos el siguiente caracter 
+\item Volvemos a empezar si nos quedan mas caracteres a enviar a la impresora.
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Ejemplo}
+\begin{block}{Esperar a TxRDY y DSR en 1}
+ \begin{verbatim}
+         CTRL EQU 62H
+         
+           ...
+           
+TEST: IN AL, CTRL
+      AND AL, 10000001B ; = 81H
+      CMP AL, 81H ; Porque hacemos CMP?
+      JNZ TEST
+      
+           ...
+ \end{verbatim}
+\end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Envio del caracter}
+\begin{block}{Enviar el caracter}
+ \begin{verbatim}
+        DOUT EQU 61H
+         
+        ...
+           
+       MOV AL, [BX] ; Proximo caracter
+       OUT DOUT, AL
+             
+ \end{verbatim}
+\end{block}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Ejercicio}
+
+\begin{itemize}
+ \item Veamos el Ejercicio 10 de la Practica
+\end{itemize}
+
+\end{frame}
+
+\section{Protocolo XON/XOFF por Consulta de Estado}
+
+\subsection{Configuración}
 
 \begin{frame}[fragile]
 \frametitle{Como configurar la Impresora con XON/XOFF}
@@ -244,6 +334,22 @@
  \end{itemize}
 \end{frame}
 
+\begin{frame}[fragile]
+\frametitle{Ejemplo}
+\begin{block}{Configuración}
+ \begin{verbatim}
+         CTRL EQU 62H
+         
+           ...
+           
+         MOV AL, 01010001B ; = 51H
+         OUT CTRL, AL
+ \end{verbatim}
+\end{block}
+
+\end{frame}
+
+\subsection{Impresión}
 \begin{frame}[fragile]
 \frametitle{Como usar la Impresora con XON/XOFF}
 
@@ -267,36 +373,78 @@
 
 \end{frame}
 
-
-\subsection{Protocolo DTR}
 \begin{frame}[fragile]
-\frametitle{Como configurar la Impresora con DTR}
-\begin{itemize}
- \item El simulador debe estar en la configuración 4
- \item Se configura la USART con el numero binario 01010001
- \begin{itemize}
- \item Error reset (bit 6 en 1)
- \item DTR activado (bit 4 en 1)
- \item Comunicacioón asincrona (bit 0 en 1)
-\end{itemize}
-\end{itemize}
+\frametitle{Esperar que este lista la impresora}
+\begin{block}{Esperar Impresora}
+ \begin{verbatim}
+        CTRL EQU 62H
+         
+        ...
+           
+TEST:  IN AL, CTRL
+       AND AL, 1
+       JNZ TEST
+             
+ \end{verbatim}
+\end{block}
 
 \end{frame}
 
+\begin{frame}[fragile]
+\frametitle{Envio del caracter}
+\begin{block}{Enviar el caracter}
+ \begin{verbatim}
+        DOUT EQU 61H
+         
+        ...
+           
+       MOV AL, [BX] ; Proximo caracter
+       OUT DOUT, AL
+             
+ \end{verbatim}
+\end{block}
+
+\end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Como usar la Impresora con DTR}
-\begin{itemize}
- \item  Consultamos para saber si esta lista para recibir un caracter. Se deben dar estas condiciones:
- \begin{itemize}
-  \item Data Set Ready = 1, la impresora debe estar lista para recibir caracter (bit de estado 7)
-  \item TxRDY = 1, la USART debe estar lista para transmitir (bit de estado 0) 
- \end{itemize}
-\item Transmitimos el siguiente caracter 
-\item Volvemos a empezar si nos quedan mas caracteres a enviar a la impresora.
-\end{itemize}
+\frametitle{Recibimos caracter?}
+\begin{block}{Hay un dato disponible?}
+ \begin{verbatim}
+        CTRL EQU 62H
+         
+        ...
+        IN AL, CTRL
+        AND AL, 02H     : Bit 1 RxRDY
+        JZ HAY CARACTER
+             
+ \end{verbatim}
+\end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Leer caracter}
+\begin{block}{Leer el dato disponible}
+ \begin{verbatim}
+        DIN EQU 60H
+         
+        ...
+        IN AL, DIN ; AL tiene el caracter recibido
+        
+ \end{verbatim}
+\end{block}
 
 \end{frame}
 
 \end{document}
 
+\begin{frame}[fragile]
+\frametitle{Ejercicio}
+
+\begin{itemize}
+ \item Veamos el Ejercicio 11 de la Practica
+\end{itemize}
+
+\end{frame}
+
+\end{document}
