@@ -184,9 +184,9 @@ Una instrucción escribe el valor de un registro antes que otra anterior que lo 
 \begin{lstlisting}[language=WinMIPS64,basicstyle=\ttfamily,keywordstyle=\color{blue}]
 .text ; Activar Forwarding
 
-dmul r7,r7,r3
-dmul r7,r7,r4
-ddiv r4,r5,r6
+dmul r7,r1,r3
+dmul r10,r7,r4
+dadd r4,r5,r6
 halt
 \end{lstlisting}
 \end{block}
@@ -426,7 +426,7 @@ salto: dadd  r3, r3, r1
 
 \begin{frame}[fragile]
 \frametitle{Delay Slot - Solución 1 }
-Podemos "arreglar" nuestro programa poniendo un \emph{NOP}, luego del salto.
+Podemos ``arreglar'' nuestro programa poniendo un \emph{NOP}, luego del salto.
 \begin{block}{}
 \begin{lstlisting}[language=WinMIPS64,basicstyle=\ttfamily,keywordstyle=\color{blue}]
        .data
@@ -456,9 +456,9 @@ A:   .word 2
        ld    r1, A(r0)
        daddi r2, r0, 3
        dadd  r3, r0, r0
-salto: dadd  r3, r3, r1
+salto: daddi  r2, r2, -1
        bnez  r2, salto
-       daddi r2, r2, -1
+       dadd r3, r3, r1
        halt
 \end{lstlisting}
 \end{block}

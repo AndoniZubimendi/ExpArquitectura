@@ -11,7 +11,7 @@ explicacion.pdf: explicacion.tex $(PNGIMAGES)
 
 # define a suffix rule for .svg -> .png
 %.png: %.svg
-	inkscape --export-area-drawing -z -e="/Users/andoni/Proyectos/facultad/ExpArquitectura/Practica1/$*.png" "/Users/andoni/Proyectos/facultad/ExpArquitectura/Practica1/$*.svg"
+	inkscape --export-area-drawing -z -e="/home/andoni/desarrollo/facu/ExpArquitectura/Practica1/$*.png" "/home/andoni/desarrollo/facu/ExpArquitectura/Practica1/$*.svg"
 
 clean:
 	rm -rf explicacion.pdf *.out *.backup *.dvi *.log *.nav *.snm *.toc *.vrm *.aux imgs/*.png
