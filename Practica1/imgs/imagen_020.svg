@@ -18,7 +18,7 @@
    inkscape:export-filename="imagen_019.png"
    inkscape:export-xdpi="600"
    inkscape:export-ydpi="600"
-   sodipodi:docname="imagen_020.svg">
+   sodipodi:docname="imagen_019.svg">
   <defs
      id="defs4">
     <linearGradient
@@ -78,7 +78,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4142136"
-     inkscape:cx="189.97647"
+     inkscape:cx="303.46711"
      inkscape:cy="777.38844"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -493,7 +493,7 @@
     </g>
     <g
        id="g4701"
-       transform="translate(-23.0325,-354.34)"
+       transform="translate(-24.446714,-380.50295)"
        inkscape:export-filename="imagen_015.png"
        inkscape:export-xdpi="600"
        inkscape:export-ydpi="600">
@@ -502,7 +502,7 @@
          inkscape:connector-curvature="0"
          id="path3115"
          d="M 402.14286,597.36218 450,598.07647"
-         style="fill:none;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:none;marker-end:url(#Arrow1Lend)" />
+         style="fill:none;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:none;marker-end:url(#Arrow1Lend)" />
       <text
          id="text4697"
          y="594.14795"
@@ -544,8 +544,8 @@
        id="rect4763"
        width="59.040852"
        height="12.997958"
-       x="182.90462"
-       y="144.40312" />
+       x="184.31883"
+       y="130.96809" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0%;font-family:'Bitstream Vera Sans';letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none"

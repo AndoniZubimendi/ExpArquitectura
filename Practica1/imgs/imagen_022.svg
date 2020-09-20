@@ -15,10 +15,10 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.92.4 5da689c313, 2019-01-14"
-   inkscape:export-filename="imagen_016.png"
+   inkscape:export-filename="imagen_021.png"
    inkscape:export-xdpi="600"
    inkscape:export-ydpi="600"
-   sodipodi:docname="imagen_013_bis.svg">
+   sodipodi:docname="imagen_021.svg">
   <defs
      id="defs4">
     <linearGradient
@@ -77,9 +77,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="309.53825"
-     inkscape:cy="1092.6627"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="303.46711"
+     inkscape:cy="777.38844"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -152,6 +152,11 @@
          x="12.691039"
          y="115.6678"
          style="font-size:10px;line-height:1.25">        MOV     CX, [BX]</tspan><tspan
+         sodipodi:role="line"
+         id="tspan3017"
+         x="12.691039"
+         y="122.43733"
+         style="font-size:10px;line-height:1.25" /><tspan
          sodipodi:role="line"
          id="tspan3019"
          x="12.691039"
@@ -493,7 +498,7 @@
     </g>
     <g
        id="g4701"
-       transform="translate(-19.946714,-546.7786)"
+       transform="translate(-24.446714,-329.59126)"
        inkscape:export-filename="imagen_015.png"
        inkscape:export-xdpi="600"
        inkscape:export-ydpi="600">
@@ -502,7 +507,7 @@
          inkscape:connector-curvature="0"
          id="path3115"
          d="M 402.14286,597.36218 450,598.07647"
-         style="fill:none;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:none;marker-end:url(#Arrow1Lend)" />
+         style="fill:none;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:none;marker-end:url(#Arrow1Lend)" />
       <text
          id="text4697"
          y="594.14795"
@@ -540,12 +545,12 @@
            style="font-size:12px;line-height:1.25">BX</tspan></text>
     </g>
     <rect
-       style="fill:none;stroke:#000000;stroke-width:0.36227173pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="fill:none;stroke:#000000;stroke-width:0.31155312pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        id="rect4763"
-       width="80.239868"
-       height="12.9313"
-       x="33.67345"
-       y="205.70093" />
+       width="59.040852"
+       height="12.997958"
+       x="184.31883"
+       y="155.71683" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0%;font-family:'Bitstream Vera Sans';letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none"

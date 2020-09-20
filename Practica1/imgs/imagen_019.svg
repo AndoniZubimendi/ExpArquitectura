@@ -15,10 +15,10 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.92.4 5da689c313, 2019-01-14"
-   inkscape:export-filename="imagen_019.png"
+   inkscape:export-filename="imagen_017.png"
    inkscape:export-xdpi="600"
    inkscape:export-ydpi="600"
-   sodipodi:docname="imagen_019.svg">
+   sodipodi:docname="imagen_018.svg">
   <defs
      id="defs4">
     <linearGradient
@@ -152,6 +152,11 @@
          x="12.691039"
          y="115.6678"
          style="font-size:10px;line-height:1.25">        MOV     CX, [BX]</tspan><tspan
+         sodipodi:role="line"
+         id="tspan3017"
+         x="12.691039"
+         y="122.43733"
+         style="font-size:10px;line-height:1.25" /><tspan
          sodipodi:role="line"
          id="tspan3019"
          x="12.691039"
@@ -493,7 +498,7 @@
     </g>
     <g
        id="g4701"
-       transform="translate(-24.446714,-380.50295)"
+       transform="translate(-24.446714,-410.90854)"
        inkscape:export-filename="imagen_015.png"
        inkscape:export-xdpi="600"
        inkscape:export-ydpi="600">
@@ -540,12 +545,12 @@
            style="font-size:12px;line-height:1.25">BX</tspan></text>
     </g>
     <rect
-       style="fill:none;stroke:#000000;stroke-width:0.31155312pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="fill:none;stroke:#000000;stroke-width:0.20279688pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        id="rect4763"
-       width="59.040852"
+       width="25.015602"
        height="12.997958"
-       x="184.31883"
-       y="130.96809" />
+       x="36.53352"
+       y="280.87469" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0%;font-family:'Bitstream Vera Sans';letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none"
@@ -643,5 +648,11 @@
          x="487.34012"
          y="52.037106"
          style="font-size:12px;line-height:1.25">Valor de DX</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.00000003pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend-6)"
+       d="M 83.438596,286.56556 183.84776,138.07314"
+       id="path3107"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
   </g>
 </svg>
