@@ -13,7 +13,7 @@ explicacion.pdf: explicacion.tex $(PNGIMAGES)
 
 # define a suffix rule for .svg -> .png
 %.png: %.svg
-	inkscape --export-area=0:0:680:400 -o "$*.png" "$*.svg"  --export-type=png
+	inkscape -o "$*.png" "$*.svg"  --export-type=png
 
 clean:
 	rm -rf explicacion.pdf *.out *.backup *.dvi *.log *.nav *.snm *.toc *.vrm *.aux imgs/*.png

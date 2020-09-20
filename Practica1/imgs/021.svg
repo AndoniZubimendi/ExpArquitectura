@@ -17,7 +17,7 @@
    inkscape:export-filename="imagen_001.png"
    inkscape:export-xdpi="600"
    inkscape:export-ydpi="600"
-   sodipodi:docname="019.svg">
+   sodipodi:docname="021.svg">
   <defs
      id="defs4">
     <marker
@@ -175,9 +175,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.6300862"
-     inkscape:cx="189.32463"
-     inkscape:cy="223.75673"
+     inkscape:zoom="4.2691917"
+     inkscape:cx="233.24455"
+     inkscape:cy="190.67532"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -223,7 +223,7 @@
      id="layer1">
     <g
        id="g1067"
-       transform="translate(0,138)">
+       transform="translate(0,190)">
       <path
          sodipodi:nodetypes="cc"
          inkscape:connector-curvature="0"
@@ -255,10 +255,10 @@
     <rect
        style="opacity:1;fill:none;fill-opacity:1;stroke:#1b7fff;stroke-width:2.202;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect1020"
-       width="29.867222"
-       height="14.581329"
-       x="34.450962"
-       y="279.84445"
+       width="59.545258"
+       height="13.906827"
+       x="208.4776"
+       y="143.0963"
        ry="1.7020788" />
     <text
        xml:space="preserve"
@@ -330,10 +330,5 @@
          id="tspan1061"
          x="466.69879"
          y="55.389977">Valor DX</tspan></text>
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.959199;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:5.75519, 5.75519;stroke-dashoffset:0;stroke-opacity:1;marker-start:url(#DotL);marker-end:url(#Arrow1Lend)"
-       d="M 69.760304,287.44525 C 216.22857,247.17677 117.20171,128.39915 207.90116,136.79237 v 0"
-       id="path1066"
-       sodipodi:nodetypes="ccc" />
   </g>
 </svg>
