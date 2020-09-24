@@ -1,4 +1,4 @@
-SVGIMAGES = $(wildcard imgs/*.svg)
+SVGIMAGES = $(wildcard ejercicio07/0*.svg ejercicio10/0*.svg)
 
 PNGIMAGES = $(patsubst %.svg,%.png,  $(SVGIMAGES))
 
@@ -16,5 +16,5 @@ explicacion.pdf: explicacion.tex $(PNGIMAGES)
 	inkscape -o "$*.png" "$*.svg"  --export-type=png
 
 clean:
-	rm -rf explicacion.pdf *.out *.backup *.dvi *.log *.nav *.snm *.toc *.vrm *.aux imgs/*.png
+	rm -rf explicacion.pdf *.out *.backup *.dvi *.log *.nav *.snm *.toc *.vrm *.aux ejercicio07/*.png ejercicio10/*.png
 

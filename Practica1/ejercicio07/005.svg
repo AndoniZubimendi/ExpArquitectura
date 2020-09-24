@@ -175,17 +175,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.5351709"
+     inkscape:zoom="1.4778301"
      inkscape:cx="163.47424"
      inkscape:cy="62.628219"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1280"
+     inkscape:window-width="1251"
      inkscape:window-height="755"
      inkscape:window-x="0"
      inkscape:window-y="23"
-     inkscape:window-maximized="0"
+     inkscape:window-maximized="1"
      inkscape:document-rotation="0" />
   <metadata
      id="metadata7">
@@ -208,13 +208,13 @@
     <image
        sodipodi:absref="/Users/andoni/Proyectos/facultad/ExpArquitectura/Practica1/imgs/base.svg"
        xlink:href="base.svg"
-       preserveAspectRatio="none"
-       inkscape:svg-dpi="96"
-       width="612.28302"
-       height="468.66101"
-       id="image383"
+       y="0"
        x="0"
-       y="0" />
+       id="image383"
+       height="468.66101"
+       width="612.28302"
+       inkscape:svg-dpi="96"
+       preserveAspectRatio="none" />
   </g>
   <g
      inkscape:label="Capa 1"
@@ -290,7 +290,7 @@
          x="454.69879"
          y="163.38998">DIR. RETORN</tspan></text>
     <path
-       style="fill:none;stroke:#000000;stroke-width:1.3;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#DotL);marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:1.3,1.3;stroke-dashoffset:0"
+       style="fill:none;stroke:#000000;stroke-width:1.29999995;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#DotL);marker-end:url(#Arrow1Lend);stroke-miterlimit:4;stroke-dasharray:5.19999981,5.19999981;stroke-dashoffset:0"
        d="M 202.96015,124.96453 112.06424,37.376955"
        id="path1379"
        sodipodi:nodetypes="cc" />
