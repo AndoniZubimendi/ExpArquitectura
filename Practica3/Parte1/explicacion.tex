@@ -1,8 +1,11 @@
 \documentclass{beamer}
 \special{landscape}
 
+
+\usepackage{ulem}
 %\usetheme{Berlin}
-\usetheme{Warsaw}
+%\usetheme{Warsaw}
+\usetheme{Boadilla}
 
 %\usecolortheme{seahorse}
 %\usefonttheme[onlysmall]{structurebold}
@@ -75,6 +78,9 @@ Notar que la noción de entrada y salida es relativa a la CPU
    \item \emph{CB} (33h): Puerto de Control Puerto B
  \end{itemize}
  \end{itemize}
+\begin{center}
+ \includegraphics[scale=0.50]{pio.png}
+\end{center}
 %\end{block}
 \end{frame}
 
@@ -126,6 +132,15 @@ Notar que la noción de entrada y salida es relativa a la CPU
 \end{itemize}
 \end{frame}
 
+
+\begin{frame}
+\frametitle{Conexión en el simulador}
+\begin{center}
+ \includegraphics[scale=0.75]{pio0.png}
+\end{center}
+\end{frame}
+
+
 \subsection{Configuración}
 \begin{frame}[fragile]
 \frametitle{Configuración del PIO}
@@ -149,7 +164,7 @@ OUT 33H, AL
 \subsection{Ejemplo}
 \begin{frame}
 \frametitle{Ejemplo}
-Veamos el Ejercicio 1 de la práctica en el simulador.
+Veamos el Ejercicio 1c de la práctica en el simulador.
 
 Este ejemplo copia el estado de los interruptores en los leds.
 \end{frame}
@@ -158,19 +173,37 @@ Este ejemplo copia el estado de los interruptores en los leds.
 \section{Impresora}
 \subsection{Introducción}
 \begin{frame}
-\frametitle{Conexión en el simulador}
+\frametitle{Descripción}
 \begin{itemize}
-  \item Esta es la configuración 1, que se establece con el comando \emph{c1}
   \item La impresora:
   \begin{itemize}
       \item Recibe de un caracter a la vez
       \item Tiene una linea de datos llamada \emph{BUSY} (ocupada) que nos indica si puede recibir un caracter
       \item Tiene una linea de datos llamada \emph{STROBE} que nos permite indicarle a la impresora que queremos enviarle un dato.
+      \item La linea de datos \emph{STROBE} debe estar siempre en 0, salvo cuando se envia el pulso, que se envia un 1, y luego vuelve a 0.
       \item Tiene un puerto de 8 bits donde recibe el caracter a imprimir
   \end{itemize}
  \item Podemos ver la salida del ``papel'' presionando F-5
  \item Podemos vaciar la salida de la impresora ejecutando el comando \emph{bi}
 \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Descripción}
+\begin{center}
+ \includegraphics[scale=0.75]{impresora.png}
+\end{center}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Conexión en el simulador}
+  \begin{itemize}
+  \item En la configuración 1, que se establece con el comando \emph{c1}, esta conectada a través del PIO.
+\end{itemize}
+\begin{center}
+ \includegraphics[scale=0.75]{pio1.png}
+\end{center}
 \end{frame}
 
 \subsection{Direccionamiento}
@@ -206,25 +239,45 @@ Para imprimir debemos:
 \begin{frame}[fragile]
 \frametitle{Inicializar el PIO}
 \begin{itemize}
-    \item Configurar el puerto A para poder leer BUSY y poder escribir STROBE
+    \item Configurar el puerto A para poder leer \emph{BUSY} y poder escribir \emph{STROBE}
     \item Configurar el puerto B para poder escribir en el puerto de datos de la impresora
-    \item Poner a 0 el bit STROBE
+    \item Poner a 0 el bit \emph{STROBE} (a continuación)
 \end{itemize}
 \begin{block}{}
 \begin{verbatim}
 ...
+; CA = 1111 1101
 MOV AL, 0FDH
-OUT 32H, AL
+OUT CA, AL
+
+; CB = 0000 0000
 MOV AL, 0
-OUT 33H, AL
-IN AL, 30H
+OUT CB, AL
+...
+\end{verbatim}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Inicializar el PIO (continuación) }
+\begin{itemize}
+    \item \sout{Configurar el puerto A para poder leer \emph{BUSY} y poder escribir \emph{STROBE}}
+    \item \sout{Configurar el puerto B para poder escribir en el puerto de datos de la impresora}
+    \item Poner a 0 el bit \emph{STROBE}
+\end{itemize}
+\begin{block}{}
+\begin{verbatim}
+...
+; Strobe a 0
+IN AL, PA 
 AND AL, 0FDH
-OUT 30H, AL
+OUT PA, AL
 ...
 \end{verbatim}
 \end{block}
 
 \end{frame}
+
 
 \begin{frame}[fragile]
 \frametitle{Esperar a que la impresora no este ocupada}
@@ -232,7 +285,7 @@ Leemos la linea BUSY hasta que este en 0
 \begin{block}{}
 \begin{verbatim}
       ...
-POLL: IN AL, 30H
+POLL: IN AL, PA
       AND AL, 1
       JNZ POLL
       ...
@@ -247,7 +300,7 @@ Cargar el caracter en el puerto B del PIO
 \begin{verbatim}
       ...
       MOV AL, PROXIMO_CAR
-      OUT 31H, AL
+      OUT PB, AL
       ...
 \end{verbatim}
 \end{block}
@@ -262,12 +315,15 @@ Cargar el caracter en el puerto B del PIO
 \begin{block}{}
 \begin{verbatim}
        ...
-       IN AL, 30H
+       ; Strobe a 1
+       IN AL, PA
        OR AL, 02H
-       OUT 30H, AL
-       IN AL, 30H
+       OUT PA, AL
+
+       ; Strobe a 0
+       IN AL, PA
        AND AL, 0FDH
-       OUT 30H, AL           
+       OUT PA, AL           
        ...
 \end{verbatim}
 \end{block}
@@ -277,11 +333,10 @@ Cargar el caracter en el puerto B del PIO
 \subsection{Ejemplo}
 \begin{frame}
 \frametitle{Ejemplo}
-Veamos el Ejercicio 4 de la práctica en el simulador.
+Veamos el Ejercicio 2b de la práctica en el simulador.
 
-Este ejemplo imprime ``ARQUITECTURA DE COMPUTADORAS'' en la impresora.
+Este ejemplo imprime ``ORGANIZACIÓN Y ARQUITECTURA DE COMPUTADORAS'' en la impresora.
 \end{frame}
-
 
 \end{document}
 

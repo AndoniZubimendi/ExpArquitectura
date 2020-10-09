@@ -1,15 +1,16 @@
 \documentclass{beamer}
 \special{landscape}
 
+\usetheme{Boadilla}
 %\usetheme{Berlin}
-\usetheme{Warsaw}
+%\usetheme{Warsaw}
 
 %\usecolortheme{seahorse}
 %\usefonttheme[onlysmall]{structurebold}
 
-\setbeamertemplate{headline}[split]
-\setbeamertemplate{footline}[default]
-\setbeamertemplate{footline}[miniframes theme]
+%\setbeamertemplate{headline}[split]
+%\setbeamertemplate{footline}[default]
+%\setbeamertemplate{footline}[miniframes theme]
 %\logo{\includegraphics[scale=0.25]{lifia_logo.png}}
 
 \mode<presentation>
@@ -108,7 +109,7 @@
  \item El simulador MSX88 nos provee 4 interrupciones por Software
  \begin{itemize}
    \item \emph{Tipo 0}: Finalizar el programa actual
-   \item \emph{Tipo 3}: Hacer puntos de parada en nuestro programa (no lo tratamos)
+   \item \emph{Tipo 3}: Hacer puntos de parada en nuestro programa 
    \item \emph{Tipo 6}: Lectura de un Caracter
    \item \emph{Tipo 7}: Escribe en la pantalla de comandos un bloque de datos
  \end{itemize}
@@ -138,6 +139,33 @@
 \end{block}
 
 \end{frame}
+
+
+\subsection{Tipo 3}
+\begin{frame}[fragile]
+\frametitle{Interrupcion por Software Tipo 3}
+\begin{itemize}
+ \item Con el llamado a esta interrupción podemos detener la ejecución del programa
+ \item El simulador detiene la ejecucion del programa y nos da el control para ejeuctar otros comandos
+ \item Podemos ver que valores tienen los registros, o la memoria.
+ \item Con el comando \emph{g} podemos continuar la ejecución
+ \item Esto puede ser util para encontrar errores o ver detalles de la ejecución
+\end{itemize}
+
+\begin{block}{Ejemplo}
+
+\begin{verbatim}
+  ... 
+  MOV AL, NUM1 
+  MOV BL, NUM2
+  INT 3  ; detengo aca y puedo ver que esta pasando
+  ...
+\end{verbatim}
+
+\end{block}
+
+\end{frame}
+
 
 \subsection{Tipo 6}
 \begin{frame}[fragile]
@@ -197,23 +225,39 @@ Veamos un ejemplo en el simulador
 \end{block}
 \end{frame}
 
-\section{Interrupciones por Hardware}
+\section{Entrada Salida}
+
+
 \subsection{Introducción}
 \begin{frame}
-\frametitle{Interrupciones por Hardware}
+\frametitle{Entrada Salida}
 %\begin{block}{Slot Accounting System}
 \begin{itemize}
  \item Para probar las interrupciones por Hardware del simulador necesitamos entender que dispositivos tiene disponible el MSX88 y como acceder a ellos. 
  \item MSX88 utiliza un espacio de direcciones diferente para el acceso a la Entrada/Salida que para acceder a la memoria.
  \item Vamos a necesitar aprender más instrucciones para poder acceder a los registros de los diferentes dispositivos.
- \item El simulador utiliza un Controlador de Interrupciones (conectado a la Entrada/Salida) para manejar las interrupciones
+ \item Los dispositivos exponen registros en direcciones especificas que nos permiten configurarlos y obtener información de los mismos
+\end{itemize}
+%\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Entrada Salida - Continuación}
+%\begin{block}{Slot Accounting System}
+\begin{itemize}
+ \item Los registros de los dispositivos están disponibles para que la CPU los pueda leer o escribir 
+ \item Y esos registros tienen direcciones para referenciarlos, pero no son direcciones de memoria.
+ \item Por ese motivo, para comunicarse con los dispositivos de entrada / salida en esta arquitectura debemos  usar instrucciones nuevas.
+ \item Las direcciones de memoria y de entrada salida no tienen relación entre sí.
+ \item Las direcciones de entrada salida las solemos llamar puertos de entrada salida
+
 \end{itemize}
 %\end{block}
 \end{frame}
 
 \subsection{Las instrucciones nuevas}
 \begin{frame}
-\frametitle{Instrucciones para Entrada / Salida y manejo de Interrupciones}
+\frametitle{Instrucciones para Entrada / Salida}
 %\begin{block}{Slot Accounting System}
 
 \begin{itemize}
@@ -232,8 +276,22 @@ Veamos un ejemplo en el simulador
 \end{itemize}
 \end{frame}
 
+\section{Interrupciones por Hardware}
+\subsection{Introducción}
 \begin{frame}
-\frametitle{Instrucciones para Entrada / Salida y manejo de Interrupciones}
+\frametitle{Interrupciones por Hardware}
+%\begin{block}{Slot Accounting System}
+\begin{itemize}
+ \item El simulador utiliza un Controlador de Interrupciones (conectado a la Entrada/Salida) para manejar las interrupciones
+ \item Para comunicarnos con el PIC y otros dispositivos vamos a usar las instrucciones de entrada / salida
+ \item También vamos a necesitar más instrucciones para controlar las interrupciones
+\end{itemize}
+%\end{block}
+\end{frame}
+
+\subsection{Mas instrucciones nuevas}
+\begin{frame}
+\frametitle{Instrucciones para  manejo de Interrupciones}
 %\begin{block}{Slot Accounting System}
 
 \begin{itemize}
@@ -248,12 +306,11 @@ Veamos un ejemplo en el simulador
 \end{itemize}
 \end{itemize}
 
-
 %\end{block}
 \end{frame}
 
 \begin{frame}
-\frametitle{Instrucciones para Entrada / Salida y manejo de Interrupciones}
+\frametitle{Instrucciones para  manejo de Interrupciones}
 %\begin{block}{Slot Accounting System}
 
 \begin{itemize}
@@ -308,8 +365,8 @@ Veamos un ejemplo en el simulador
 
 \begin{itemize}
  \item El PIC posee varios registros donde podemos configurar u obtener su estado (con las instrucciones OUT e IN)
- \item EL PIC está conectado al bus de Entrada Salida a partir de la dirección 0x20.
- \item Tiene 12 registros en total. Los registros se encuentran ubicados en forma consecutiva a partir de la dirección base (0x20).
+ \item EL PIC está conectado al bus de Entrada Salida a partir de la dirección 20h.
+ \item Tiene 12 registros en total. Los registros se encuentran ubicados en forma consecutiva a partir de la dirección base (20h).
  \item Todos los registros son de 8 bits.
 \end{itemize}
 \end{frame}
@@ -319,9 +376,9 @@ Veamos un ejemplo en el simulador
 %\begin{block}{Slot Accounting System}
 
 \begin{itemize}
- \item \emph{EOI} (0x20) Fin de Interrupción. Solo para escribir, se debe mandar el comando de fin de interrupción cuando se termino de servir la interrupción. (Valor 0x20)
- \item \emph{IMR} (0x21) Registro de Mascara de Interrupciones. Permite enmascarar selectivamente las interrupciones que va a recibir el PIC. Cada bit de este registro representa una linea de interrupción. Si el valor es puesto en 1, esa interrupción estará inhibida.
- \item \emph{IRR} (0x22) Registro de Peticion de Interrupciones. Almacena las interrupciones pendientes. Cada bit de este registro representa una linea de interrupción. Cuando la interrupción se satisface, el bit de dicha línea se pone a cero.
+ \item \emph{EOI} (20h) Fin de Interrupción. Solo para escribir, se debe mandar el comando de fin de interrupción cuando se termino de servir la interrupción. (Valor 20h)
+ \item \emph{IMR} (21h) Registro de Mascara de Interrupciones. Permite enmascarar selectivamente las interrupciones que va a recibir el PIC. Cada bit de este registro representa una linea de interrupción. Si el valor es puesto en 1, esa interrupción estará inhibida.
+ \item \emph{IRR} (22h) Registro de Peticion de Interrupciones. Almacena las interrupciones pendientes. Cada bit de este registro representa una linea de interrupción. Cuando la interrupción se satisface, el bit de dicha línea se pone a cero.
 \end{itemize}
 
 \end{frame}
@@ -332,8 +389,8 @@ Veamos un ejemplo en el simulador
 %\begin{block}{Slot Accounting System}
 
 \begin{itemize}
- \item \emph{ISR} (0x23) Registro de Interrupción en Servicio. El bit que representa la línea de interrupción que se está atendiendo estará en 1. El resto en 0.
- \item \emph{INT0..7} (0x24-2B) Cada uno de estos registros contiene le valor del \emph{vector de interrupción} correspondiente a la entrada del mismo nombre.
+ \item \emph{ISR} (23h) Registro de Interrupción en Servicio. El bit que representa la línea de interrupción que se está atendiendo estará en 1. El resto en 0.
+ \item \emph{INT0..7} (24h-2Bh) Cada uno de estos registros contiene le valor del \emph{vector de interrupción} correspondiente a la entrada del mismo nombre.
 \end{itemize}
 
 \end{frame}

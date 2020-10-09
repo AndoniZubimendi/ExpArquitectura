@@ -42,7 +42,6 @@
 \subsection{Introducción}
 \begin{frame}
 \frametitle{Hand-Shake}
-%\begin{block}{Slot Accounting System}
 \begin{itemize}
  \item Interfaz que nos permite comunicarnos facilmente con la Impresora, ya que realiza la temporización automáticamente
  \item Posee dos registros, de 8 bits.
@@ -61,7 +60,6 @@
 \subsection{Continuación}
 \begin{frame}
 \frametitle{Continuación}
-%\begin{block}{Slot Accounting System}
 \begin{itemize}
  \item El registro de estado 
  \begin{itemize}
@@ -75,66 +73,133 @@
 \end{itemize}
 \end{frame}
 
-\subsection{Interrupción}
 \begin{frame}
-\frametitle{Interrupción}
-%\begin{block}{Slot Accounting System}
+\frametitle{Descripción}
 \begin{itemize}
- \item Para utilizar HAND-SHAKE con interrupciones debemos usar el modo de configuración 2 (c2)
-
+ \item Para utilizar HAND-SHAKE debemos usar el modo de configuración 2 (c2)
  \item La interrupción que genera el HAND-SHAKE se conectará a la interrupción de nivel 2 (INT2) del PIC
-
  \item Cuando el manejador de la interrupción sea invocado. La impresora va a estar lista para recibir un caracter.
+ \item Podemos usar también el HAND-SHAKE por consulta de estado, sin usar interrupciónes. Es similar a usarla con el PIO.
 \end{itemize}
 \end{frame}
 
-
 \subsection{Sin interrupciones}
-\begin{frame}[fragile]
+\begin{frame}
 \frametitle{Como usar el HAND-SHAKE sin interrpciones}
 \begin{itemize}
- \item El simulador debe estar en la Configuración 1
+ \item Configurar el HAND-SHAKE para que no utilice interrupciones
  \item Debemos esperar a que la impresora este lista, consultado el estado de la linea BUSY en el registro EST
+ \item Cuando la impresora este lista, escribimos el caracter a imprimir en el registro DATO.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Configurar sin interrupciones}
+\begin{itemize}
+ \item Para configurar el HAND-SHAKE para que no utilice interrupciones, debemos poner a 0 el bit 7 de EST
+\end{itemize}
+\begin{block}{}
+ \begin{verbatim}
+         IN AL, EST
+         AND AL, 7Fh
+         OUT EST, AL
+ \end{verbatim}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Enviar el caracter}
+\begin{itemize}
+ \item Esperar a que la impresora este lista, consultado el estado de la linea BUSY en el registro EST
  \item Cuando la impresora este lista, escribimos el caracter a imprimir en el registro DATO.
  \item ¿Qué diferencias hay con el uso de la impresora con el PIO?
 \end{itemize}
-
 \begin{block}{}
  \begin{verbatim}
-   POLL: IN AL, 41h
+   POLL: IN AL, EST
          AND AL, 1
          JNZ POLL
 
          MOV AL, PROX_CAR
-         OUT 40h, AL
+         OUT DATO, AL
  \end{verbatim}
 \end{block}
-
 \end{frame}
 
 
+\begin{frame}
+\frametitle{En la práctica}
+\begin{itemize}
+ \item Veamos el ejercicio 3a. 
+\end{itemize}
+\end{frame}
 
 \subsection{Con interrupciones}
 \begin{frame}[fragile]
 \frametitle{Como usar el HAND-SHAKE con interrpciones}
 \begin{itemize}
- \item El simulador debe estar en la configuración 2
- \item Debemos programar el PIC para que atienda la interrupción de nivel 2 (INT2)
+ \item Configurar el HAND-SHAKE para que utilice interrupciones
+ \item Debemos programar el PIC para que habilite la interrupción de nivel 2 (INT2)
  \item Debemos cargar la dirección de la rutina en el vector de interrupciones correspondiente
  \item En la rutina de la interrupción escribimos el caracter a enviar a la impresora
 \end{itemize}
+\end{frame}
 
+\begin{frame}[fragile]
+\frametitle{Configurar PIC}
+\begin{itemize}
+ \item Habilitar la INT 2 del PIC en el IMR
+ \item Cargar el vetor correspondiente a la interrupción en el registro INT2
+\end{itemize}
+\begin{block}{}
+ \begin{verbatim}
+         CLI
+         ...
+         MOV AL, 0FBh ;  1111 1011 
+         OUT IMR, AL
+         MOV AL, 10
+         OUT INT2, AL
+         ...
+ \end{verbatim}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Configurar con interrupciones}
+\begin{itemize}
+ \item Para configurar el HAND-SHAKE para que utilice interrupciones, debemos poner a 1 el bit 7 de EST
+\end{itemize}
+\begin{block}{}
+ \begin{verbatim}
+         IN AL, EST 
+         OR AL, 80h
+         OUT EST, AL
+ \end{verbatim}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Como usar el HAND-SHAKE con interrpciones}
+\begin{itemize}
+ \item En la rutina de la interrupción escribimos el caracter a enviar a la impresora
+\end{itemize}
 \begin{block}{}
  \begin{verbatim}
   RUT_HAND:
          ...
          MOV AL, PROX_CAR
-         OUT 40h, AL
+         OUT DATO, AL
          ...
          IRET
  \end{verbatim}
 \end{block}
+\end{frame}
 
+\begin{frame}
+\frametitle{En la práctica}
+\begin{itemize}
+ \item Veamos el ejercicio 3c. 
+\end{itemize}
 \end{frame}
 
 
