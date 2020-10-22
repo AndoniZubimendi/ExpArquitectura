@@ -163,7 +163,7 @@ DADD,DADDI,ANDI,XORI,HALT,BEQ,BNEQ,LD,NOP,DMUL,DSUB,AND,DDIV,%
 \item Decodificación / Búsqueda de Operandos (ID)
 \begin{itemize}
   \item Se decodifica la instrucción
-  \item Se accede al banco de registro por los operandos
+  \item Se accede al banco de registro por los operandos. No puede avanzar si no estan disponibles.
   \item Si es un salto, se calcula el destino y si hay que realizarlo o no
 \end{itemize}
 \item Ejecución / Dirección Efectiva (EX) 

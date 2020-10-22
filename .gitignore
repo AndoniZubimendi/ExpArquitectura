@@ -8,5 +8,6 @@
 *.toc
 *.vrb
 *.aux
-*.png
+/Practica1/ejercicio07/*.png
+/Practica1/ejercicio10/*.png
 .DS_Store

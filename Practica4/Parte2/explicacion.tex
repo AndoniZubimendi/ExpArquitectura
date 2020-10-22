@@ -1,7 +1,6 @@
 \documentclass{beamer}
 \special{landscape}
 
-%\usetheme{Berlin}
 \usetheme{Warsaw}
 
 %\usecolortheme{seahorse}
@@ -97,6 +96,7 @@ Llamamos \emph{atasco} a la situación que impide a una o mas instrucciones segu
 \item Provocados por conflictos con los recursos.
 \end{itemize}
 
+
 \item Dependencia de Datos
 \begin{itemize}
 \item Dos instrucciones se comunican por medio de un dato
@@ -131,6 +131,12 @@ halt
 \end{lstlisting}
 \end{block}
 \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Atasco Estructural}
+\includegraphics[scale=0.45]{atasco-estructural.png}
+\end{frame}
+
 
 \section{Atascos por dependencia de Datos}
 \subsection{General}
@@ -176,6 +182,16 @@ AND  r7, r5, r9
 
 \end{frame}
 
+\begin{frame}[fragile]
+\frametitle{RAW}
+Una instrucción depende del resultado de otra instrucción que todavía no ha finalizado y debe esperar a que el resultado este disponible.
+\begin{block}{}
+\includegraphics[scale=0.45]{raw.png}
+\end{block}
+
+\end{frame}
+
+
 \subsection{WAR - Escritura luego de una Lectura}
 \begin{frame}[fragile]
 \frametitle{WAR}
@@ -194,6 +210,15 @@ halt
 \end{frame}
 
 
+\begin{frame}[fragile]
+\frametitle{WAR}
+Una instrucción escribe el valor de un registro antes que otra anterior que lo tiene que leer lo lea
+\begin{block}{}
+\includegraphics[scale=0.45]{war.png}
+\end{block}
+\end{frame}
+
+
 \subsection{WAW - Escritura luego de una Escritura}
 \begin{frame}[fragile]
 \frametitle{WAW}
@@ -208,6 +233,15 @@ halt
 \end{lstlisting}
 \end{block}
 
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{WAW}
+Una instrucción escribe un dato después que otra posterior
+\begin{block}{}
+\includegraphics[scale=0.45]{war.png}
+\end{block}
 \end{frame}
 
 \section{Atascos por Dependencia de Control}
@@ -230,9 +264,15 @@ saltar: halt
 \end{block}
 \end{frame}
 
+\begin{frame}[fragile]
+\frametitle{Atasco por Dependencia de Control}
+\begin{block}{}
+\includegraphics[scale=0.45]{atasco-branch-taken.png}
+\end{block}
+\end{frame}
 
-\section{Posibles soluciones a atascos}
-\subsection{A riesgos estructurales}
+
+\section{Posibles soluciones a riesgos estructurales}
 \begin{frame}
 \frametitle{Soluciones a riesgos estructurales}
 Replicar, segmentar ó realizar turnos para el acceso a las unidades funcionales en conflicto.
@@ -251,25 +291,26 @@ Replicar, segmentar ó realizar turnos para el acceso a las unidades funcionales
 \end{frame}
 
 
-\subsection{A problemas de dependencia de datos}
+\section{Posibles soluciones a problemas de dependencia de datos}
 \begin{frame}
 \frametitle{General}
 \begin{itemize}
 \item Se debe determinar cómo y cuando aparecen esos riesgos
 \item Hay dos tipos de soluciones
 \begin{itemize}
-\item Hardware
-\begin{itemize}
-\item Adelantamiento de Operandos (Forwarding)
-\end{itemize}
 \item Software
 \begin{itemize}
 \item Podemos agregar instrucciones \emph{NOP}, o reordenar las instrucciones
+\end{itemize}
+\item Hardware
+\begin{itemize}
+\item Adelantamiento de Operandos (Forwarding)
 \end{itemize}
 \end{itemize}
 \end{itemize}
 \end{frame}
 
+\subsection{Agregar NOPs}
 \begin{frame}[fragile]
 \frametitle{Agregar Instrucciones NOP}
 
@@ -295,6 +336,7 @@ Ahora no hay atascos, pero tenemos más instrucciones.
 
 
 
+\subsection{Reordenar instrucciones}
 \begin{frame}[fragile]
 \frametitle{Reordenar instrucciones}
 
@@ -336,19 +378,158 @@ No hay atascos ahora.
 
 
 
+\subsection{Forwarding}
+
 \begin{frame}[fragile]
 \frametitle{Forwarding}
 Forwarding, Adelantamiento o Cortocircuito
 \begin{itemize}
 \item Consiste en pasar directamente el resultado obtenido con una instrucción a las instrucciones que lo necesitan como operando.
-\item Si el dato necesario está disponible antes se lleva a la entrada de la etapa correspondiente ($X_{i+1}$) sin esperar a la escritura ($M_{i}$ o $W_{i}$).
+\item Si el dato necesario está disponible antes se lleva a la entrada de la etapa correspondiente sin esperar a llegar a la etapa escritura de escritura del banco de registros.
 \item La idea es tener disponible el operando lo antes posible para no perder ciclos
 \item Usar esta técnica no implica la eliminación de todos los atascos.
 \item En WinMIPS64 podemos activarlo o desactivarlo en cualquier momento. Un cambio en esta configuración implica reiniciar la simulación.
 \end{itemize}
 \end{frame}
 
-\subsection{A problemas de dependencia de control}
+
+\begin{frame}[fragile]
+\frametitle{Forwarding}
+Forwarding, Adelantamiento o Cortocircuito
+\begin{itemize}
+\item Cuando no existe Forwarding, una instrucción debe tener todos sus operandos (registros) disponibles en la etapa ID
+\item Cuando esta activo los registros pueden aelantarse una vez calculados o leidos a la etapa que los necesita. No siempre esa etapa es ID.
+\item Que instrucciones pueden adelantar un operando:
+\begin{itemize}
+\item Si la instrucción es de lectura de memoria, puede adelantar el operando luego de ejecutar la etapa MEM.
+\item Si es una instrucción aritmetico / lógica, luego de ejecutada la etapa EX.
+\end{itemize}
+\item Si el operando se podia adelantar en EX, podrá también adelantarlo en MEM si una instrucción lo requiere.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Forwarding}
+Forwarding, Adelantamiento o Cortocircuito
+\begin{itemize}
+\item Cuando se requiere un operando:
+\begin{itemize}
+\item Si la instrucción es de escritura de memoria, el operando a escribir, se necesita en MEM..
+\item Si el operando se necesita para una operación aritmetico / lógica, se necesita en la etapa EX.
+\item Si el operando se necesita para una instrucción de salto condicional, se necesita en la etapa ID.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Forwarding}
+Forwarding, Adelantamiento o Cortocircuito
+\begin{itemize}
+\item Situaciones donde pueden ocurrir forwarding
+\begin{itemize}
+\item Lectura seguida de Escritura
+\item Lectura seguida de Aritmetico / Lógica
+\item Lectura seguida de Salto Condicional
+\item Aritmetica / Lógica seguida de Escritura
+\item Aritmetica / Lógica seguida de Aritmetico / Logica
+\item Aritmetica / Lógica seguida de Salto Condicional
+\item Lectura seguida de Lectura 
+\item Aritmetica / Lógica seguida de Lectura
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Forwarding - Lectura seguida de escritura}
+\begin{itemize}
+\item Lectura seguida de Escritura
+\begin{itemize}
+\item El operando a escribir en memoria viene de una instrucción de lectura anterior.
+\end{itemize}
+\end{itemize}
+\includegraphics[scale=0.45]{forwarding-1-lectura-escritura.png}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Forwarding - Lectura seguida de Aritmetico / Logica}
+\begin{itemize}
+\item Lectura seguida de Aritmetico / Lógica
+\begin{itemize}
+\item Uno de los operandos de una instrucción aritmetico lógico proviene de una lectura de memoria
+\end{itemize}
+\end{itemize}
+\includegraphics[scale=0.45]{forwarding-2-lectura-aritm.png}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Forwarding - Lectura seguida de Salto Condicional}
+\begin{itemize}
+\item Lectura seguida de Salto Condicional
+\begin{itemize}
+\item Uno de los operandos de una instrucción de salto condicional proviene de una lectura de memoria
+\end{itemize}
+\end{itemize}
+\includegraphics[scale=0.45]{forwarding-3-lectura-beq.png}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Forwarding - Aritmetica / Lógica seguida de Escritura}
+\begin{itemize}
+\item Aritmetica / Lógica seguida de Escritura
+\begin{itemize}
+\item El operando a escribir en memoria viene de una instrucción aritmetico lógica anterior.
+\end{itemize}
+\end{itemize}
+\includegraphics[scale=0.45]{forwarding-4-aritmetica-escritura.png}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Forwarding - Aritmetica / Lógica seguida de Aritmetico / Logica}
+\begin{itemize}
+\item Aritmetica / Lógica seguida de Aritmetico / Logica
+\begin{itemize}
+\item Un operando de una instrucción aritmetico lógica viene de una instrucción aritmetico lógica anterior.
+\end{itemize}
+\end{itemize}
+\includegraphics[scale=0.45]{forwarding-5-aritmetica-aritmetica.png}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Forwarding - Aritmetica / Lógica seguida de Salto Condicional}
+\begin{itemize}
+\item Aritmetica / Lógica seguida de Salto Condicional
+\begin{itemize}
+\item Un operando de una instrucción de salto condicional viene de una instrucción aritmetico lógica anterior.
+\end{itemize}
+\end{itemize}
+\includegraphics[scale=0.45]{forwarding-6-aritmetica-salto-condicional.png}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Forwarding - Lectura seguida de Lectura}
+\begin{itemize}
+\item Lectura seguida de Lectura
+\begin{itemize}
+\item El operando que calcula el desplazamiento en memoria de una escritura viene de una instrucción de lectura anterior.
+\end{itemize}
+\end{itemize}
+\includegraphics[scale=0.45]{forwarding-7-lectura-lectura.png}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Forwarding - Aritmetica / Lógica seguida de Lectura}
+\begin{itemize}
+\item Aritmetica / Lógica seguida de Lectura
+\begin{itemize}
+\item El operando que calcula el desplazamiento en memoria de una escritura viene de una instrucción aritmetico lógica anterior.
+\end{itemize}
+\end{itemize}
+\includegraphics[scale=0.45]{forwarding-8-aritmetica-lectura.png}
+\end{frame}
+
+
+\section{Posibles soluciones a problemas de dependencia de control}
 \begin{frame}
 \frametitle{General}
 Existe una Penalización por salto, ya que se empieza a analizar la instrucción inmediata siguiente, mientras estamos decodificando el salto. Las instrución de salto puede ser: 
@@ -360,6 +541,7 @@ Deberiamos encontrar alguna manera de saber cual es la próxima instrucción lo 
 \end{frame}
 
 
+\subsection{Branch Target Buffer}
 \begin{frame}
 \frametitle{Branch-Target-Buffer}
 Podemos ir guardando un historial de saltos para poder "predecir" si un salto se produce o no.
@@ -391,6 +573,7 @@ Podemos ir guardando un historial de saltos para poder "predecir" si un salto se
 \end{frame}
 
 
+\subsection{Delay Slot}
 \begin{frame}
 \frametitle{Delay Slot}
 Salto retardado o de relleno de ranura de retardo
