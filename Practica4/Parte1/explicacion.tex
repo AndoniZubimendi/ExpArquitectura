@@ -163,12 +163,12 @@ DADD,DADDI,ANDI,XORI,HALT,BEQ,BNEQ,LD,NOP,DMUL,DSUB,AND,DDIV,%
 \item Decodificación / Búsqueda de Operandos (ID)
 \begin{itemize}
   \item Se decodifica la instrucción
-  \item Se accede al banco de registro por los operandos. No puede avanzar si no estan disponibles.
-  \item Si es un salto, se calcula el destino y si hay que realizarlo o no
+  \item Se accede al banco de registro por los operandos en la segunda mitad del ciclo. No puede avanzar si no estan disponibles.
+  \item Si es un salto, se determina si hay que realizarlo o no
 \end{itemize}
 \item Ejecución / Dirección Efectiva (EX) 
 \begin{itemize}
-  \item Si es una instrucción de proceso, se ejecuta en la ALU
+  \item Si es una instrucción aritmetico/logica, se ejecuta en la ALU
   \item Si es acceso a memoria, se calcula la dirección efectiva
   \item Si es un salto, se calcula el nuevo PC
 \end{itemize}
@@ -178,7 +178,7 @@ DADD,DADDI,ANDI,XORI,HALT,BEQ,BNEQ,LD,NOP,DMUL,DSUB,AND,DDIV,%
 \end{itemize}
 \item Almacenamiento (WB) 
 \begin{itemize}
-  \item Se almacena el resultado (si existiese) en el banco de registros
+  \item Se almacena el resultado (si existiese) en el banco de registros en la primera mitad del ciclo
 \end{itemize}
 \end{itemize}
 \end{frame}
@@ -187,15 +187,16 @@ DADD,DADDI,ANDI,XORI,HALT,BEQ,BNEQ,LD,NOP,DMUL,DSUB,AND,DDIV,%
 \begin{frame}
 \frametitle{}
 \begin{itemize}
-\item Cada etapa se ejecuta en un ciclo de reloj, salvo que involucre la unidad de punto flotante.
-\item Las etapas de punto flotante dependen de la operación a realizar:
+\item Cada etapa se ejecuta en un ciclo de reloj, salvo algunas operaciones aritmeticas de punto flotante, que tienen unidades de ejecuciión separadas
+\item Las etapas de cada uniad de ejecución dependen de la operación a realizar:
 \begin{itemize}
-\item Suma se realiza en 4 ciclos
-\item Multiplicación se realiza en 7 ciclos
-\item División se realiza en 24 ciclos
+\item Suma se realiza en 4 ciclos, con 4 etapas
+\item Multiplicación se realiza en 7 ciclos, con 7 etapas
+\item División se realiza en 24 ciclos, 1 etapa
 \end{itemize}
+\item Distintas unidades de ejecución pueden estar activas al mismo tiempo
 \end{itemize}
-\includegraphics[scale=0.45]{ciclo-instruccion.png}
+\includegraphics[scale=0.35]{ciclo-instruccion.png}
 \end{frame}
 
 \subsection{Ejemplo}
@@ -228,13 +229,13 @@ DADD,DADDI,ANDI,XORI,HALT,BEQ,BNEQ,LD,NOP,DMUL,DSUB,AND,DDIV,%
 \frametitle{Variables}
 Las variables se deben guardar en la memoria de datos.
 \begin{itemize}
-\item \emph{.word w1}: entra un word de dato (64-bits, 8 bytes)
-\item \emph{.byte b1}: entra bytes (8-bits, 1 byte)
-\item \emph{.word32 n1}: entra número(s) de 32 bit (32-bits, 4 bytes)
-\item \emph{.word16 n}: entra número(s) de 16 bit (16-bits, 2 bytes)
-\item \emph{.double f}: entra número de punto flotante
-\item \emph{.ascii ``cadena''}: entra string ascii
-\item \emph{.asciiz ``cadena''}:  entra string ascii terminado en cero
+\item \emph{.word w1}: guarda un word (64-bits, 8 bytes)
+\item \emph{.byte b1}: guarda un byte (8-bits, 1 byte)
+\item \emph{.word32 n1}: guarda un número(s) de 32 bit (32-bits, 4 bytes)
+\item \emph{.word16 n}: guarda un número(s) de 16 bit (16-bits, 2 bytes)
+\item \emph{.double f}: guarda un número de punto flotante (64-bits, 8 bytes)
+\item \emph{.ascii ``cadena''}: guarda una cadena  ascii
+\item \emph{.asciiz ``cadena''}:  guarda una cadena ascii terminada en cero
 \end{itemize}
 \end{frame}
 

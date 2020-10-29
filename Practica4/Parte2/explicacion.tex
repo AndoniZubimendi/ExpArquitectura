@@ -446,10 +446,25 @@ Forwarding, Adelantamiento o Cortocircuito
 \item Lectura seguida de Escritura
 \begin{itemize}
 \item El operando a escribir en memoria viene de una instrucción de lectura anterior.
+\item La instrucción \emph{sd} debe esperar a que la instrucción \emph{ld} se complete, esperando en \emph{ID}
+\end{itemize}
+\end{itemize}
+\includegraphics[scale=0.45]{forwarding-1.png}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Forwarding - Lectura seguida de escritura}
+\begin{itemize}
+\item Lectura seguida de Escritura
+\begin{itemize}
+\item Con el adelantamiento activo, cuando la instrucción \emph{ld} pasa la etapa \emph{MEM}, ya puede adelantar el operando
+\item La instrucción \emph{sd} necesita el registro r1 en la etapa de \emph{MEM}
+\item Por lo tanto ya no hay atascos RAW.
 \end{itemize}
 \end{itemize}
 \includegraphics[scale=0.45]{forwarding-1-lectura-escritura.png}
 \end{frame}
+
 
 \begin{frame}[fragile]
 \frametitle{Forwarding - Lectura seguida de Aritmetico / Logica}
@@ -457,10 +472,25 @@ Forwarding, Adelantamiento o Cortocircuito
 \item Lectura seguida de Aritmetico / Lógica
 \begin{itemize}
 \item Uno de los operandos de una instrucción aritmetico lógico proviene de una lectura de memoria
+\item La instrucción \emph{daddi} debe esperar a que la instrucción \emph{ld} se complete, esperando en \emph{ID}
+\end{itemize}
+\end{itemize}
+\includegraphics[scale=0.45]{forwarding-2.png}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Forwarding - Lectura seguida de Aritmetico / Logica}
+\begin{itemize}
+\item Lectura seguida de Aritmetico / Lógica
+\begin{itemize}
+\item Con el adelantamiento activo, cuando la instrucción \emph{ld} pasa la etapa \emph{MEM}, ya puede adelantar el operando
+\item La instrucción \emph{daddi} necesita el registro r1 en la etapa de \emph{EX}
+\item Como \emph{daddi} debe esperar en \emph{EX} a que \emph{ld} pase la etapa \emph{MEM}, se produce un solo atasco RAW.
 \end{itemize}
 \end{itemize}
 \includegraphics[scale=0.45]{forwarding-2-lectura-aritm.png}
 \end{frame}
+
 
 \begin{frame}[fragile]
 \frametitle{Forwarding - Lectura seguida de Salto Condicional}
@@ -468,10 +498,25 @@ Forwarding, Adelantamiento o Cortocircuito
 \item Lectura seguida de Salto Condicional
 \begin{itemize}
 \item Uno de los operandos de una instrucción de salto condicional proviene de una lectura de memoria
+\item La instrucción \emph{bneqz} debe esperar a que la instrucción \emph{ld} se complete, esperando en \emph{ID}
+\end{itemize}
+\end{itemize}
+\includegraphics[scale=0.45]{forwarding-3.png}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Forwarding - Lectura seguida de Salto Condicional}
+\begin{itemize}
+\item Lectura seguida de Salto Condicional
+\begin{itemize}
+\item Con el adelantamiento activo, cuando la instrucción \emph{ld} pasa a la etapa \emph{MEM}, ya puede adelantar el operando
+\item La instrucción \emph{beqz} necesita el registro r1 en la etapa de \emph{DI}
+\item Por lo tanto esta situación no cambia
 \end{itemize}
 \end{itemize}
 \includegraphics[scale=0.45]{forwarding-3-lectura-beq.png}
 \end{frame}
+
 
 \begin{frame}[fragile]
 \frametitle{Forwarding - Aritmetica / Lógica seguida de Escritura}
@@ -479,6 +524,20 @@ Forwarding, Adelantamiento o Cortocircuito
 \item Aritmetica / Lógica seguida de Escritura
 \begin{itemize}
 \item El operando a escribir en memoria viene de una instrucción aritmetico lógica anterior.
+\item La instrucción \emph{sd} debe esperar a que la instrucción \emph{daddi} se complete, esperando en \emph{ID}
+\end{itemize}
+\end{itemize}
+\includegraphics[scale=0.45]{forwarding-4.png}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Forwarding - Aritmetica / Lógica seguida de Escritura}
+\begin{itemize}
+\item Aritmetica / Lógica seguida de Escritura
+\begin{itemize}
+\item Con el adelantamiento activo, cuando la instrucción \emph{daddi} pasa la etapa \emph{EX}, ya puede adelantar el operando
+\item La instrucción \emph{sd} necesita el registro r1 en la etapa de \emph{MEM}
+\item Por lo tanto ya no hay atascos RAW.
 \end{itemize}
 \end{itemize}
 \includegraphics[scale=0.45]{forwarding-4-aritmetica-escritura.png}
@@ -490,10 +549,25 @@ Forwarding, Adelantamiento o Cortocircuito
 \item Aritmetica / Lógica seguida de Aritmetico / Logica
 \begin{itemize}
 \item Un operando de una instrucción aritmetico lógica viene de una instrucción aritmetico lógica anterior.
+\item La segunda  instrucción \emph{daddi} debe esperar a que la primer instrucción \emph{daddi} se complete, esperando en \emph{ID}
+\end{itemize}
+\end{itemize}
+\includegraphics[scale=0.45]{forwarding-5.png}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Forwarding - Aritmetica / Lógica seguida de Aritmetico / Logica}
+\begin{itemize}
+\item Aritmetica / Lógica seguida de Aritmetico / Logica
+\begin{itemize}
+\item Con el adelantamiento activo, cuando la primer instrucción \emph{daddi} pasa la etapa \emph{EX}, ya puede adelantar el operando
+\item La segunda instrucción \emph{daddi} necesita el registro r1 en la etapa de \emph{EX}
+\item Por lo tanto ya no hay atascos RAW.
 \end{itemize}
 \end{itemize}
 \includegraphics[scale=0.45]{forwarding-5-aritmetica-aritmetica.png}
 \end{frame}
+
 
 \begin{frame}[fragile]
 \frametitle{Forwarding - Aritmetica / Lógica seguida de Salto Condicional}
@@ -501,6 +575,20 @@ Forwarding, Adelantamiento o Cortocircuito
 \item Aritmetica / Lógica seguida de Salto Condicional
 \begin{itemize}
 \item Un operando de una instrucción de salto condicional viene de una instrucción aritmetico lógica anterior.
+\item La instrucción \emph{beqz} debe esperar a que la instrucción \emph{daddi} se complete, esperando en \emph{ID}
+\end{itemize}
+\end{itemize}
+\includegraphics[scale=0.45]{forwarding-6.png}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Forwarding - Aritmetica / Lógica seguida de Salto Condicional}
+\begin{itemize}
+\item Aritmetica / Lógica seguida de Salto Condicional
+\begin{itemize}
+\item Con el adelantamiento activo, cuando la instrucción \emph{daddi} pasa la etapa \emph{EX}, ya puede adelantar el operando
+\item La instrucción \emph{beqz} necesita el registro r1 en la etapa de \emph{ID}
+\item Como \emph{beqz} debe esperar en \emph{ID} a que \emph{daddi} pase la etapa \emph{EX}, se produce un solo atasco RAW.
 \end{itemize}
 \end{itemize}
 \includegraphics[scale=0.45]{forwarding-6-aritmetica-salto-condicional.png}
@@ -512,10 +600,26 @@ Forwarding, Adelantamiento o Cortocircuito
 \item Lectura seguida de Lectura
 \begin{itemize}
 \item El operando que calcula el desplazamiento en memoria de una escritura viene de una instrucción de lectura anterior.
+\item La segunda instrucción \emph{ld} debe esperar a que la primer instrucción \emph{ld} se complete, esperando en \emph{ID}
+\end{itemize}
+\end{itemize}
+\includegraphics[scale=0.45]{forwarding-7.png}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Forwarding - Lectura seguida de Lectura}
+\begin{itemize}
+\item Lectura seguida de Lectura
+\begin{itemize}
+\item Con el adelantamiento activo, cuando la primer instrucción \emph{ld} pasa la etapa \emph{MEM}, ya puede adelantar el operando
+\item La segunda instrucción \emph{ld} necesita acceder a r1 en la etapa \emph{EX}
+\item Como la segunda instrucción \emph{ld} debe esperar en \emph{EX} a que la primer instrucción  \emph{ld} pase la etapa \emph{MEM}, se produce un solo atasco RAW.
+
 \end{itemize}
 \end{itemize}
 \includegraphics[scale=0.45]{forwarding-7-lectura-lectura.png}
 \end{frame}
+
 
 \begin{frame}[fragile]
 \frametitle{Forwarding - Aritmetica / Lógica seguida de Lectura}
@@ -523,6 +627,20 @@ Forwarding, Adelantamiento o Cortocircuito
 \item Aritmetica / Lógica seguida de Lectura
 \begin{itemize}
 \item El operando que calcula el desplazamiento en memoria de una escritura viene de una instrucción aritmetico lógica anterior.
+\item La instrucción \emph{ld} debe esperar a que la instrucción \emph{daddi} se complete, esperando en \emph{ID}
+\end{itemize}
+\end{itemize}
+\includegraphics[scale=0.45]{forwarding-8.png}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Forwarding - Aritmetica / Lógica seguida de Lectura}
+\begin{itemize}
+\item Aritmetica / Lógica seguida de Lectura
+\begin{itemize}
+\item Con el adelantamiento activo, cuando la instrucción \emph{daddi} pasa la etapa \emph{EX}, ya puede adelantar el operando
+\item La instrucción \emph{ld} necesita acceder a r1 en la etapa \emph{EX}
+\item Por lo tanto ya no hay atascos RAW.
 \end{itemize}
 \end{itemize}
 \includegraphics[scale=0.45]{forwarding-8-aritmetica-lectura.png}
