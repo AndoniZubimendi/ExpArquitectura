@@ -240,7 +240,7 @@ halt
 \frametitle{WAW}
 Una instrucción escribe un dato después que otra posterior
 \begin{block}{}
-\includegraphics[scale=0.45]{war.png}
+\includegraphics[scale=0.45]{waw.png}
 \end{block}
 \end{frame}
 
@@ -279,7 +279,7 @@ Replicar, segmentar ó realizar turnos para el acceso a las unidades funcionales
 \begin{itemize}
 \item Duplicación de recursos hardware
 \begin{itemize}
-\item Sumadores o restadores además de la ALU
+\item Unidades separadas para multiplicar, dividir además de la ALU
 \end{itemize}
 \item Separación en memorias de instrucciones y datos
 \item Turnar el acceso al banco de registros
@@ -414,7 +414,7 @@ Forwarding, Adelantamiento o Cortocircuito
 \begin{itemize}
 \item Cuando se requiere un operando:
 \begin{itemize}
-\item Si la instrucción es de escritura de memoria, el operando a escribir, se necesita en MEM..
+\item Si la instrucción es de escritura de memoria, el operando a escribir, se necesita en MEM.
 \item Si el operando se necesita para una operación aritmetico / lógica, se necesita en la etapa EX.
 \item Si el operando se necesita para una instrucción de salto condicional, se necesita en la etapa ID.
 \end{itemize}
@@ -498,7 +498,7 @@ Forwarding, Adelantamiento o Cortocircuito
 \item Lectura seguida de Salto Condicional
 \begin{itemize}
 \item Uno de los operandos de una instrucción de salto condicional proviene de una lectura de memoria
-\item La instrucción \emph{bneqz} debe esperar a que la instrucción \emph{ld} se complete, esperando en \emph{ID}
+\item La instrucción \emph{beqz} debe esperar a que la instrucción \emph{ld} se complete, esperando en \emph{ID}
 \end{itemize}
 \end{itemize}
 \includegraphics[scale=0.45]{forwarding-3.png}
@@ -510,7 +510,7 @@ Forwarding, Adelantamiento o Cortocircuito
 \item Lectura seguida de Salto Condicional
 \begin{itemize}
 \item Con el adelantamiento activo, cuando la instrucción \emph{ld} pasa a la etapa \emph{MEM}, ya puede adelantar el operando
-\item La instrucción \emph{beqz} necesita el registro r1 en la etapa de \emph{DI}
+\item La instrucción \emph{beqz} necesita el registro r1 en la etapa de \emph{ID}
 \item Por lo tanto esta situación no cambia
 \end{itemize}
 \end{itemize}
@@ -664,16 +664,14 @@ Deberiamos encontrar alguna manera de saber cual es la próxima instrucción lo 
 \frametitle{Branch-Target-Buffer}
 Podemos ir guardando un historial de saltos para poder "predecir" si un salto se produce o no.
 \begin{itemize}
-\item Cada vez que se ejecuta una instrucción de salto se guarda un registro si el salto se realizo o no. Ejemplo:
+\item Cada vez que se ejecuta una instrucción de salto se guarda un registro si el salto se realizo o no (un registro para cada instrucción de salto). Ejemplo:
 \begin{itemize}
 \item Tengo un contador, inicialmente en 0. Sumo 1 por salto realizado, resto 1 si el salto no se realiza.
 \item La próxima vez que pasé por esa instrucción puedo \emph{predecir} si el salto se realizará o no. 
 \item Si el contador es positivo asumo se realizara el salto, la próxima instrucción será la que resulte de ejecutar el salto
 \item Si el contador fuera negativo asumo no se realiza el salto, la próxima instrucción será la siguiente.
 \end{itemize}
-\item La predicción puede fallar.
 \item Que se hace la primera vez que se evalua un salto depende de la arquitectura.
-\item Cada instrucción de salto tiene su propio control.
 \end{itemize}
 \end{frame}
 
@@ -687,7 +685,29 @@ Podemos ir guardando un historial de saltos para poder "predecir" si un salto se
 \item Si la instrucción se ejecuto por lo menos una vez, se asume que va a ocurrir lo último que ocurrió.
 \item Si el resultado de la predicción cambio, se actualiza ese estado.
 \end{itemize}
-\item Si una predicción no ocurre, hay una penalidad de un ciclo perdido.\end{itemize}
+\item Si una predicción no ocurre, hay una penalidad de un ciclo perdido adicional.\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Branch-Target-Buffer en el Simulador}
+\begin{itemize}
+\item Si un salto se predice que va a ocurrir y no ocurre. La penalidad son 2 atascos Branch Misprediction.
+\item Si un salto se predice que no va a ocurrir y ocurre. La penalidad son 2 atascos Branch Taken.
+\item Los 2 atascos corresponden a:
+\begin{itemize}
+\item 1 Ciclo para la actualización de la tabla BTB
+\item 1 Ciclo para la carga de la nueva instrucción (como ocurria sin BTB)
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Branch-Target-Buffer en el Simulador}
+\begin{itemize}
+\item Si un salto se predice que va a ocurrir, podemos ver un simbolo después de la dirección de memoria en la ventana del programa
+\end{itemize}
+\includegraphics[scale=0.65]{btb.png}
 \end{frame}
 
 

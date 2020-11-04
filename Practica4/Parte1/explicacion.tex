@@ -164,13 +164,13 @@ DADD,DADDI,ANDI,XORI,HALT,BEQ,BNEQ,LD,NOP,DMUL,DSUB,AND,DDIV,%
 \begin{itemize}
   \item Se decodifica la instrucción
   \item Se accede al banco de registro por los operandos en la segunda mitad del ciclo. No puede avanzar si no estan disponibles.
-  \item Si es un salto, se determina si hay que realizarlo o no
+  \item Si es un salto condicional, se determina si hay que realizarlo o no 
+  \item Si hay que ejecutar un salto, también se calcula el nuevo PC
 \end{itemize}
 \item Ejecución / Dirección Efectiva (EX) 
 \begin{itemize}
   \item Si es una instrucción aritmetico/logica, se ejecuta en la ALU
   \item Si es acceso a memoria, se calcula la dirección efectiva
-  \item Si es un salto, se calcula el nuevo PC
 \end{itemize}
 \item Acceso a Memoria (MEM) 
 \begin{itemize}
