@@ -25,12 +25,12 @@
 
 
 %%
-%% WinMIPS64 definition (c) 2013
+%% WinMIPS64 definition (c) 2020
 \lstdefinelanguage{WinMIPS64}
  {morekeywords={%
 cvt.l.d,cvt.d.l,mfc1,mtc1,DADD,DADDI,ANDI,XORI,HALT,BEQ,BNEQ,LD,NOP,DMUL,DSUB,AND,DDIV,%
-	JAL,J,DSLL,BNEZ,SD},%
- otherkeywords={.word,.code,.data,.text},%
+	JAL,J,DSLL,BNEZ,SD, JR, BEQZ, cvt.d.l, cvt.l.d, lwu},%
+ otherkeywords={.word,.code,.data,.text, .asciiz, .ascii, .word32 },%
    sensitive=false,%
    morecomment=[l]{;},%
    morestring=[b]",%
@@ -45,7 +45,7 @@ cvt.l.d,cvt.d.l,mfc1,mtc1,DADD,DADDI,ANDI,XORI,HALT,BEQ,BNEQ,LD,NOP,DMUL,DSUB,AN
     R20,R21,R22,R23,R24,R25,R26,R27,R28,R29,R30,R31%
     r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19%
     r20,r21,r22,r23,r24,r25,r26,r27,r28,r29,r30,r31%
-	$0,$zero,$s0,$s1,$s2,$s3,$s4,$s5,$s6,$s7,$sp,$t1%
+	$0,$zero,$s0,$s1,$s2,$s3,$s4,$s5,$s6,$s7,$sp,$ra,$t1%
     },emphstyle={\color{red}\bfseries}%
 }%
 
@@ -53,11 +53,16 @@ cvt.l.d,cvt.d.l,mfc1,mtc1,DADD,DADDI,ANDI,XORI,HALT,BEQ,BNEQ,LD,NOP,DMUL,DSUB,AN
 %    .code,.data,.word
 %    },emphstyle={\color{green}\bfseries}%
 %}%
-\title{Practica 5 - WinMIPS64}
+\title{Practica 5 - WinMIPS64 - Pila}
 
 \AtBeginSection[]
 
 \begin{document}
+
+\begin{frame}
+%\frametitle{Presentación}
+\titlepage
+\end{frame}
 
 \section{Generación y manejo de pila}
 \subsection{Introducción}
@@ -102,7 +107,7 @@ La instrucción PUSH del MSX88 es la encargada de apilar un valor en la pila. Ve
 \item $(SP) \xleftarrow{} (SP) - 2$ \emph{; Decremento Puntero de pila}
 \item $[SP+1:SP] \xleftarrow{} (fuente)$ \emph{; Guardo valor en la pila}
 \end{itemize}
-Para simular esta operación deberiamos:
+Para imitar esta operación deberiamos:
 \begin{itemize}
 \item Decrementar en 8 el puntero de pila. ¿Por qué 8?
 \item Guardar en la posición de memoria del puntero de pila el valor.
@@ -135,7 +140,7 @@ La instrucción POP del MSX88 es la encargada de desapilar un valor de la pila. 
 \item $(fuente) \xleftarrow{} [SP+1:SP]$ \emph{; Guardo valor de la pila}
 \item $(SP) \xleftarrow{} (SP) + 2$ \emph{; Incremento el Puntero de pila}
 \end{itemize}
-Para simular esta operación deberiamos:
+Para imitar esta operación deberiamos:
 \begin{itemize}
 \item Leer el dato de la posición de memoria del puntero de pila y guardarlo en un registro.
 \item Incrementar en 8 el puntero de pila.
