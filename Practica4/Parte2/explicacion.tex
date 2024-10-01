@@ -1,0 +1,263 @@
+\documentclass{beamer}
+\special{landscape}
+
+%\usetheme{Berlin}
+\usetheme{Warsaw}
+
+%\usecolortheme{seahorse}
+%\usefonttheme[onlysmall]{structurebold}
+
+\setbeamertemplate{headline}[split]
+\setbeamertemplate{footline}[default]
+\setbeamertemplate{footline}[miniframes theme]
+%\logo{\includegraphics[scale=0.25]{lifia_logo.png}}
+
+\mode<presentation>
+\usepackage[spanish]{babel}
+\usepackage{beamerthemesplit}
+\usepackage{color}      % use if color is used in text
+
+\usepackage[utf8]{inputenc}
+
+% Comandos en modo Verbatim
+%\usepackage{fancyvrb}
+
+\usepackage{listings}
+
+
+%%
+%% WinMIPS64 definition (c) 2020
+\lstdefinelanguage{WinMIPS64}
+ {morekeywords={%
+cvt.l.d,cvt.d.l,mfc1,mtc1,DADD,DADDI,ANDI,XORI,HALT,BEQ,BNEQ,LD,NOP,DMUL,DSUB,AND,DDIV,%
+	JAL,J,DSLL,BNEZ,SD, JR, BEQZ, cvt.d.l, cvt.l.d, lwu},%
+ otherkeywords={.word,.code,.data,.text, .asciiz, .ascii, .word32 },%
+   sensitive=false,%
+   morecomment=[l]{;},%
+   morestring=[b]",%
+ }
+
+\lstset{emph={%  
+    F0,F1,F2,F3,F4,F5,F6,F7,F8,F9,F10,F11,F12,F13,F14,F15,F16,F17,F18,F19%
+    F20,F21,F22,F23,F24,F25,F26,F27,F28,F29,F30,F31%
+    f0,f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15,f16,f17,f18,f19%
+    f20,f21,f22,f23,f24,f25,f26,f27,f28,f29,f30,f31%
+    R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R12,R13,R14,R15,R16,R17,R18,R19%
+    R20,R21,R22,R23,R24,R25,R26,R27,R28,R29,R30,R31%
+    r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19%
+    r20,r21,r22,r23,r24,r25,r26,r27,r28,r29,r30,r31%
+	$0,$zero,$s0,$s1,$s2,$s3,$s4,$s5,$s6,$s7,$sp,$ra,$t1%
+    },emphstyle={\color{red}\bfseries}%
+}%
+
+%\lstset{emph={%  
+%    .code,.data,.word
+%    },emphstyle={\color{green}\bfseries}%
+%}%
+\title{Practica 4 - WinMIPS64}
+%\author{Juan Antonio Zubimendi\\azubimendi@lifia.info.unlp.edu.ar}
+
+\AtBeginSection[]
+
+\begin{document}
+
+\section{Entrada - Salida}
+
+\subsection{Introducción}
+\begin{frame}
+\frametitle{Introducción}
+\begin{itemize}
+\item A diferencia de otras arquitecturas, los puertos de E/S estan mapeados en la memoria de datos.
+\item En lugar de utilizar instrucciones especiales como \emph{IN} y \emph{OUT} como haciamos en el \emph{MSX88}, aca usamos las instrucciones \emph{LD} y \emph{SD} para acceder a los puertos de entrada salida.
+\item Los puertos de E/S suelen estar posicionados en un lugar fuera del rango de la memoria de datos.
+\item En el WinMIPS64, la memoria de datos llega hasta la posición 0x0400. Los puertos de E/S empiezan en la posición 0x10000.
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Puertos de Entrada / Salida}
+\begin{itemize}
+\item Tenemos solamente dos puertos de E/S:  \emph{CONTROL} y \emph{DATA}.
+\item \emph{CONTROL} y \emph{DATA} son direcciones de memoria fijas. 
+\item Aplicando distintos comandos a través de \emph{CONTROL}, es posible producir salidas o ingresar datos a través de la dirección \emph{DATA}. 
+\item Una vez cargado el registro \emph{CONTROL}, se realiza el Servicio de Entrada/Salida.
+\begin{itemize}
+\item Si necesito pasar algún parámetro, debo cargar \emph{DATA} antes de invocar al servicio
+\item Si el servicio devuelve un dato, debo leer \emph{DATA} despues de invocar al servicio
+\end{itemize}
+\item Las direcciones de memoria de \emph{CONTROL} y \emph{DATA} son 0x10000 y 0x10008 respectivamente. 
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Puertos de Entrada / Salida}
+
+Como el set de instrucciones del WinMIPS64 no cuenta con instrucciones que permitan cargar un valor inmediato de más de 16 bits, resulta conveniente definirlas en la memoria de datos, así:
+
+\begin{block}{}
+\begin{lstlisting}[language=WinMIPS64,basicstyle=\ttfamily,keywordstyle=\color{blue}]
+       .data
+       CONTROL: .word32 0x10000
+       DATA: .word32 0x10008
+         ...
+       .code
+         ...
+       lwu $s0, DATA($0)    ; 0x10000 en s0
+       lwu $s1, CONTROL($0) ; 0x10008 en s1
+	   
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Servicios de Entrada / Salida}
+
+WinMIPS64 posee una terminal donde se pueden realizar las operaciones de Entrada/Salida
+
+\begin{itemize}
+\item Se puede utilizar como terminal alfanumerica donde:
+
+\begin{itemize}
+\item Se puede imprimir valores y cadenas de caracteres
+\item Leer números enteros, números de punto flotante o caracteres
+\end{itemize}
+
+\item Se puede utilizar como una terminal gráfica:
+\begin{itemize}
+\item Tiene una resolución de 50x50 puntos
+\end{itemize}
+
+\end{itemize}
+\end{frame}
+
+
+\section{Pantalla Alfanumerica}
+
+\subsection{Limpiar Pantalla}
+\begin{frame}
+\frametitle{Limpiar Pantalla}
+Para limpiar la pantalla hay que:
+\begin{itemize}
+\item Cargar en \emph{CONTROL} el valor 6.
+\end{itemize}
+\end{frame}
+
+
+\subsection{Salida - Imprimiendo}
+\begin{frame}
+\frametitle{Impresión de un número}
+Para imprimir un número debo:
+\begin{itemize}
+\item Poner en \emph{DATA} el valor a imprimir, ya se un entero o un flotante.
+\item Cargar en \emph{CONTROL}:
+\begin{itemize}
+\item Un \emph{1} si el número es entero sin signo
+\item Un \emph{2} si el número es entero con signo
+\item Un \emph{3} si el número es de punto flotante
+\end{itemize}
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Impresión de una cadena}
+Para imprimir una cadena de caracteres:
+\begin{itemize}
+\item Asegurarme que la cadena finaliza con el carácter ASCII 0 (acordarse tipo de dato \emph{.asciiz})
+\item Poner en \emph{DATA} la posición de memoria donde esta la cadena.
+\item Cargar en \emph{CONTROL} el valor 4.
+\end{itemize}
+\end{frame}
+
+
+\subsection{Entrada - Leyendo datos de la terminal}
+\begin{frame}
+\frametitle{Leer un Número}
+Para la lectura de un número debo:
+\begin{itemize}
+\item Cargar en \emph{CONTROL} el valor 8.
+\item Leer de \emph{DATA} el valor númerico leido
+\begin{itemize}
+\item Si el número ingresado tiene un punto(".") se lo convertira a punto flotante, sino será entero.
+\item No hay manera fácil de saber si el usuario escribio un número entero o flotante desde el programa
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Leer un Caracter}
+
+Para la lectura de un caracter debo:
+\begin{itemize}
+\item Cargar en \emph{CONTROL} el valor 9.
+\item Leer de \emph{DATA} el caracter
+\begin{itemize}
+\item Se leerá el código ASCII del caracter leido
+\item Como el caracter es de 8bits, nos conviene utilizar la instrucción \emph{lbu} para su lectura.
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+	
+
+\section{Pantalla Gráfica}
+\subsection{Introducción}
+
+\begin{frame}
+\frametitle{Introducción}
+
+\begin{itemize}
+\item La pantalla gráfica cuenta con una resolución de 50x50 puntos
+\item El punto (0, 0) es el punto en la esquina inferior izquierda
+\item El punto (49, 49) es el punto en la esquina superior derecha
+\item Cada punto puede tener un color independiente de los otros puntos
+\item Cada color esta compuesto de 3 partes:
+
+\begin{itemize}
+\item R (Red): Rojo 
+\item G (Green): Verde
+\item B (Blue): Azul
+\end{itemize}
+
+\item Cada componente RGB, va de 0 a 255 (8 bits):
+\begin{itemize}
+\item 0 : Ese color no esta presente
+\item 255 : Fuerte presencia de ese color
+\end{itemize}
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Limpiar Pantalla}
+Para limpiar la pantalla hay que:
+\begin{itemize}
+\item Cargar en \emph{CONTROL} el valor 7.
+\end{itemize}
+\end{frame}
+
+
+\subsection{Dibujar un punto}
+
+\begin{frame}
+\frametitle{Dibujar un punto}
+Para pintar con un color indicado un punto de la pantalla gráfica: 
+\begin{itemize}
+\item Escribir en \emph{DATA} un color expresado en RGB (usando 4 bytes para representarlo)
+\begin{itemize}
+\item un byte para cada componente de color e ignorando el valor del cuarto byte
+\end{itemize}
+\item En \emph{DATA}+4 la coordenada Y
+\item En \emph{DATA}+5 la coordenada X 
+\item En \emph{CONTROL} un 5
+\end{itemize}
+
+\end{frame}
+
+
+\end{document}
+
