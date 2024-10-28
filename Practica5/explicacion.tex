@@ -38,7 +38,7 @@
   morekeywords={[1]cvt.l.d,cvt.d.l,mfc1,mtc1,DADD,DADDI,ANDI,XORI,HALT,BEQ,BNEQ,LD,NOP,DMUL,DSUB,AND,DDIV,%
 	JAL,J,DSLL,BNEZ,SD, JR, BEQZ, cvt.d.l, cvt.l.d, lwu},
   % assembler directives
-  morekeywords={[2].word,.code,.data,.text, .asciiz, .ascii, .word32},
+  morekeywords={[2].word,.code,.data, .asciiz, .ascii, .word32},
   % register names
   morekeywords={[3]F0,F1,F2,F3,F4,F5,F6,F7,F8,F9,F10,F11,F12,F13,F14,F15,F16,F17,F18,F19,%
     F20,F21,F22,F23,F24,F25,F26,F27,F28,F29,F30,F31,%
@@ -81,7 +81,7 @@
 % {keywords={%
 %cvt.l.d,cvt.d.l,mfc1,mtc1,DADD,DADDI,ANDI,XORI,HALT,BEQ,BNEQ,LD,NOP,DMUL,DSUB,AND,DDIV,%
 %	JAL,J,DSLL,BNEZ,SD, JR, BEQZ, cvt.d.l, cvt.l.d, lwu},%
-% otherkeywords={.word,.code,.data,.text, .asciiz, .ascii, .word32 },%
+% otherkeywords={.word,.code,.data,.code, .asciiz, .ascii, .word32 },%
 %   sensitive=false,%
 %   morecomment=[l]{;},%
 %   morestring=[b]",%
@@ -218,7 +218,7 @@ Registro & Nombre & Uso & Preservado \\ \hline
                exponente: .word 4
                result: .word 0
 
-               .text
+               .code
                ld $a0, base($0)
                ld $a1, exponente($0)
                jal a_la_potencia
@@ -472,7 +472,7 @@ Toda subrutina se dividirá siempre en tres partes
 .data
 valor: .word 10
 result: .word 0
-.text
+.code
     daddi $sp, $0, 0x400 ; Inicializa $sp
     ld $a0, valor($0)
     jal factorial
