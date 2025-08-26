@@ -190,7 +190,9 @@ Deberiamos encontrar alguna manera de saber cual es la próxima instrucción lo 
 \begin{frame}
 \frametitle{Branch-Target-Buffer}
 Podemos ir guardando un historial de saltos para poder "predecir" si un salto se produce o no.
+
 \begin{itemize}
+\item No todos los saltos se pueden predecir. Solo los que tengan una dirección definida (jr depende del valor de un registro).
 \item Cada vez que se ejecuta una instrucción de salto se guarda un registro si el salto se realizo o no (un registro para cada instrucción de salto). Ejemplo:
 \begin{itemize}
 \item Tengo un contador, inicialmente en 0. Sumo 1 por salto realizado, resto 1 si el salto no se realiza.

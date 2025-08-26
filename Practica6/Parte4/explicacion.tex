@@ -115,75 +115,6 @@
 
 \begin{document}
 
-\section{Segmentación de Cause}
-
-\begin{frame}
-\frametitle{Segmentación de Cause}
-\begin{itemize}
-\item Si las etapas son independientes podemos ejecutarlas en paralelo
-\item Mientras ejecutamos una etapa de una instrucción, ejecutamos otra etapa de otra instrucción.
-\item De esta manera usamos mejor la CPU, todas las etapas estan en funcionamiento en cada ciclo de CPU.
-\begin{itemize}
-  \item Cada instrucción tarda en ejecutarse 5 ciclos
-  \item $1$ instrucción, 5 ciclos
-  \item $2$ instrucciones, 6 ciclos
-  \item $3$ instrucciones, 7 ciclos
-  \item $10$ instrucciones, 14 ciclos
-  \item $n$ cantidad de instrucciones se ejecutaran en $4 + n$ ciclos.
-\end{itemize}
-\item A esta técnica se la llama Segmentación de Cause
-\end{itemize}
-\end{frame}
-
-
-\subsection{Ciclo de Instrucción}
-\begin{frame}
-\frametitle{Ciclo de Instruccion de WinMIPS64}
-\begin{itemize}
-\item Busqueda (IF)
-\begin{itemize}
-  \item Se accede a la memoria buscando la instrucción
-  \item Se incrementa el PC
-\end{itemize}
-\item Decodificación / Búsqueda de Operandos (ID)
-\begin{itemize}
-  \item Se decodifica la instrucción
-  \item Se accede al banco de registro por los operandos en la segunda mitad del ciclo. No puede avanzar si no estan disponibles.
-  \item Si es un salto condicional, se determina si hay que realizarlo o no
-  \item Si hay que ejecutar un salto, también se calcula el nuevo PC
-\end{itemize}
-\item Ejecución / Dirección Efectiva (EX)
-\begin{itemize}
-  \item Si es una instrucción aritmetico/logica, se ejecuta en la ALU
-  \item Si es acceso a memoria, se calcula la dirección efectiva
-\end{itemize}
-\item Acceso a Memoria (MEM)
-\begin{itemize}
-  \item Si es un acceso a memoria, se accede
-\end{itemize}
-\item Almacenamiento (WB)
-\begin{itemize}
-  \item Se almacena el resultado (si existiese) en el banco de registros en la primera mitad del ciclo
-\end{itemize}
-\end{itemize}
-\end{frame}
-
-\subsection{Diagrama}
-\begin{frame}
-\frametitle{}
-\begin{itemize}
-\item Cada etapa se ejecuta en un ciclo de reloj, salvo algunas operaciones aritmeticas de punto flotante, que tienen unidades de ejecuciión separadas
-\item Las etapas de cada uniad de ejecución dependen de la operación a realizar:
-\begin{itemize}
-\item Suma (PF) se realiza en 4 ciclos, con 4 etapas
-\item Multiplicación se realiza en 7 ciclos, con 7 etapas
-\item División se realiza en 24 ciclos, 1 etapa
-\end{itemize}
-\item Distintas unidades de ejecución pueden estar activas al mismo tiempo
-\end{itemize}
-\includegraphics[scale=0.35]{ciclo-instruccion.png}
-\end{frame}
-
 \section{Atascos}
 
 \subsection{Introducción}
@@ -219,8 +150,6 @@ Problemas:
 \frametitle{Atascos}
 Llamamos \emph{atasco} a la situación que impide a una o mas instrucciones seguir su camino en el cauce.
 
-Los atascos pueden ocurrir por 3 razones:
-
 \begin{itemize}
 \item Estructural
 \begin{itemize}
@@ -239,7 +168,33 @@ Los atascos pueden ocurrir por 3 razones:
 \end{itemize}
 
 \end{itemize}
-Si resolvemos con paradas del cauce, disminuye el rendimiento
+Si resolvemos con paradas del cauce, disminuye el rendimiento teórico
+\end{frame}
+
+
+\section{Atascos Estructurales}
+
+\begin{frame}[fragile]
+\frametitle{Atascos Estructurales}
+Dos o mas instrucciones necesitan utilizar el mismo recurso hardware en el mismo ciclo.
+
+\begin{block}{}
+\begin{lstlisting}[basicstyle=\ttfamily,keywordstyle=\color{blue}]
+.code
+dmul r7,r7,r3
+nop 
+nop 
+nop 
+nop 
+nop 
+halt
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Atasco Estructural}
+\includegraphics[scale=0.45]{atasco-estructural.png}
 \end{frame}
 
 
@@ -296,6 +251,104 @@ Una instrucción depende del resultado de otra instrucción que todavía no ha f
 
 \end{frame}
 
+
+\subsection{WAR - Escritura luego de una Lectura}
+\begin{frame}[fragile]
+\frametitle{WAR}
+Una instrucción escribe el valor de un registro antes que otra anterior que lo tiene que leer lo lea
+\begin{block}{}
+\begin{lstlisting}[basicstyle=\ttfamily,keywordstyle=\color{blue}]
+.code ; Activar Forwarding
+
+dmul r7,r1,r3
+dmul r10,r7,r4
+dadd r4,r5,r6
+halt
+\end{lstlisting}
+\end{block}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{WAR}
+Una instrucción escribe el valor de un registro antes que otra anterior que lo tiene que leer lo lea
+\begin{block}{}
+\includegraphics[scale=0.45]{war.png}
+\end{block}
+\end{frame}
+
+
+\subsection{WAW - Escritura luego de una Escritura}
+\begin{frame}[fragile]
+\frametitle{WAW}
+Una instrucción escribe un dato después que otra posterior
+\begin{block}{}
+\begin{lstlisting}[basicstyle=\ttfamily,keywordstyle=\color{blue}]
+.code
+
+dmul r1,r2,r3
+dadd r1,r6,r3
+halt
+\end{lstlisting}
+\end{block}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{WAW}
+Una instrucción escribe un dato después que otra posterior
+\begin{block}{}
+\includegraphics[scale=0.45]{waw.png}
+\end{block}
+\end{frame}
+
+\section{Atascos por Dependencia de Control}
+\subsection{General}
+\begin{frame}[fragile]
+\frametitle{General}
+Una instrucción que modifica el valor del PC no lo ha hecho cuando se tiene que comenzar la siguiente.
+\begin{itemize}
+\item Estas instrucciones son saltos condicionales o incondicionales.
+\item La decodificación de la instrucción se hace en el segundo ciclo de una instrucción, la siguiente instrucción ya ingreso en el cause en la etapa \emph{IF}.
+\item Si el salto realmente se ejecuta, la próxima instrucción no sera la inmediata siguiente sino la que se determine por la instrucción
+\end{itemize}
+\begin{block}{}
+\begin{lstlisting}[basicstyle=\ttfamily,keywordstyle=\color{blue}]
+        .code
+        j saltar
+        dadd r1,r2,r3
+saltar: halt
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Atasco por Dependencia de Control}
+\begin{block}{}
+\includegraphics[scale=0.45]{atasco-branch-taken.png}
+\end{block}
+\end{frame}
+
+
+\section{Posibles soluciones a riesgos estructurales}
+\begin{frame}
+\frametitle{Soluciones a riesgos estructurales}
+Replicar, segmentar ó realizar turnos para el acceso a las unidades funcionales en conflicto.
+\begin{itemize}
+\item Duplicación de recursos hardware
+\begin{itemize}
+\item Unidades separadas para multiplicar, dividir además de la ALU
+\end{itemize}
+\item Separación en memorias de instrucciones y datos
+\item Turnar el acceso al banco de registros
+\begin{itemize}
+\item Escrituras en la primera mitad de los ciclos de reloj
+\item Lecturas en la segunda mitad de los ciclos de reloj
+\end{itemize}
+\end{itemize}
+\end{frame}
 
 
 \section{Posibles soluciones a problemas de dependencia de datos}
@@ -405,7 +458,7 @@ Forwarding, Adelantamiento o Cortocircuito
 Forwarding, Adelantamiento o Cortocircuito
 \begin{itemize}
 \item Cuando no existe Forwarding, una instrucción debe tener todos sus operandos (registros) disponibles en la etapa ID
-\item Cuando esta activo los registros pueden adelantarse una vez calculados o leidos a la etapa que los necesita. No siempre esa etapa es ID.
+\item Cuando esta activo los registros pueden aelantarse una vez calculados o leidos a la etapa que los necesita. No siempre esa etapa es ID.
 \item Que instrucciones pueden adelantar un operando:
 \begin{itemize}
 \item Si la instrucción es de lectura de memoria, puede adelantar el operando luego de ejecutar la etapa MEM.
@@ -652,6 +705,156 @@ Forwarding, Adelantamiento o Cortocircuito
 \end{itemize}
 \includegraphics[scale=0.45]{forwarding-8-aritmetica-lectura.png}
 \end{frame}
+
+
+\section{Posibles soluciones a problemas de dependencia de control}
+\begin{frame}
+\frametitle{General}
+Existe una Penalización por salto, ya que se empieza a analizar la instrucción inmediata siguiente, mientras estamos decodificando el salto. Las instrución de salto puede ser: 
+\begin{itemize}
+\item Incondicional: La dirección de destino se debe determinar lo más pronto posible, dentro del cauce, para reducir la penalización.
+\item Condicional: Introduce riesgo adicional por la dependencia entre la condición de salto y el resultado de una instrucción previa.
+\end{itemize}
+Deberiamos encontrar alguna manera de saber cual es la próxima instrucción lo antes posible.
+\end{frame}
+
+
+\subsection{Branch Target Buffer}
+\begin{frame}
+\frametitle{Branch-Target-Buffer}
+Podemos ir guardando un historial de saltos para poder "predecir" si un salto se produce o no.
+\begin{itemize}
+\item Cada vez que se ejecuta una instrucción de salto se guarda un registro si el salto se realizo o no (un registro para cada instrucción de salto). Ejemplo:
+\begin{itemize}
+\item Tengo un contador, inicialmente en 0. Sumo 1 por salto realizado, resto 1 si el salto no se realiza.
+\item La próxima vez que pasé por esa instrucción puedo \emph{predecir} si el salto se realizará o no. 
+\item Si el contador es positivo asumo se realizara el salto, la próxima instrucción será la que resulte de ejecutar el salto
+\item Si el contador fuera negativo asumo no se realiza el salto, la próxima instrucción será la siguiente.
+\end{itemize}
+\item Que se hace la primera vez que se evalua un salto depende de la arquitectura.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Branch-Target-Buffer en el Simulador}
+\begin{itemize}
+\item El simulador WinMIPS64 permite activar o desactivar la predicción de Saltos
+\item La predicción de saltos usado en el simulador funciona de la siguiente manera:
+\begin{itemize}
+\item Si es la primera vez que se realiza el salto, se predice que el salto no va a ocurrir.
+\item Si la instrucción se ejecuto por lo menos una vez, se asume que va a ocurrir lo último que ocurrió.
+\item Si el resultado de la predicción cambio, se actualiza ese estado.
+\end{itemize}
+\item Si una predicción no ocurre, hay una penalidad de un ciclo perdido adicional.\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Branch-Target-Buffer en el Simulador}
+\begin{itemize}
+\item Si un salto se predice que va a ocurrir y no ocurre. La penalidad son 2 atascos Branch Misprediction.
+\item Si un salto se predice que no va a ocurrir y ocurre. La penalidad son 2 atascos Branch Taken.
+\item Los 2 atascos corresponden a:
+\begin{itemize}
+\item 1 Ciclo para la actualización de la tabla BTB
+\item 1 Ciclo para la carga de la nueva instrucción (como ocurria sin BTB)
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Branch-Target-Buffer en el Simulador}
+\begin{itemize}
+\item Si un salto se predice que va a ocurrir, podemos ver un simbolo después de la dirección de memoria en la ventana del programa
+\end{itemize}
+\includegraphics[scale=0.65]{btb.png}
+\end{frame}
+
+
+\subsection{Delay Slot}
+\begin{frame}
+\frametitle{Delay Slot}
+Salto retardado o de relleno de ranura de retardo
+\begin{itemize}
+\item Es un método alternativo de atacar el problema de los atascos por dependencia de Control
+\item El problema es la predicción de la siguiente instrucción luego de un salto.
+\item Delay Slot ofrece como solución que la siguiente instrucción después de un salto \emph{SIEMPRE} se ejecute.
+\item Esto elimina el problema de la predicción de instrucciones...
+\item ... pero hay que tener en cuenta a la hora de programar.
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Delay Slot}
+¿Es lo mismo con o sin \emph{Delay Slot}?
+\begin{block}{}
+\begin{lstlisting}[basicstyle=\ttfamily,keywordstyle=\color{blue}]
+       .data
+A:   .word 2
+       .code
+       ld    r1, A(r0)
+       daddi r2, r0, 3
+       dadd  r3, r0, r0
+salto: dadd  r3, r3, r1
+       daddi r2, r2, -1
+       bnez  r2, salto
+       halt
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Delay Slot - Solución 1 }
+Podemos ``arreglar'' nuestro programa poniendo un \emph{NOP}, luego del salto.
+\begin{block}{}
+\begin{lstlisting}[basicstyle=\ttfamily,keywordstyle=\color{blue}]
+       .data
+A:   .word 2
+       .code
+       ld    r1, A(r0)
+       daddi r2, r0, 3
+       dadd  r3, r0, r0
+salto: dadd  r3, r3, r1
+       daddi r2, r2, -1
+       bnez  r2, salto
+       nop
+       halt
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Delay Slot - Solución 2 }
+O podriamos reordenar las instrucciones...
+\begin{block}{}
+\begin{lstlisting}[basicstyle=\ttfamily,keywordstyle=\color{blue}]
+       .data
+A:   .word 2
+       .code
+       ld    r1, A(r0)
+       daddi r2, r0, 3
+       dadd  r3, r0, r0
+salto: daddi  r2, r2, -1
+       bnez  r2, salto
+       dadd r3, r3, r1
+       halt
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Delay Slot en el Simulador}
+\begin{itemize}
+\item El simulador WinMIPS64 permite activar o desactivar el Delay Slot
+\item No se pueden tener activos Delay-Slot y Branch-Target-Buffer al mismo tiempo
+\item Recordar que cualquier cambio en estas opciones involucra un reinicio en la simulación
+\end{itemize}
+\end{frame}
+
 
 \end{document}
 
