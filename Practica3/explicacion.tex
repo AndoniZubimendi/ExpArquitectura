@@ -1,0 +1,397 @@
+\documentclass{beamer}
+\special{landscape}
+
+\usetheme{Boadilla}
+%\usetheme{Berlin}
+%\usetheme{Warsaw}
+
+%\usecolortheme{seahorse}
+%\usefonttheme[onlysmall]{structurebold}
+
+%\setbeamertemplate{headline}[split]
+%\setbeamertemplate{footline}[default]
+%\setbeamertemplate{footline}[miniframes theme]
+%\logo{\includegraphics[scale=0.25]{lifia_logo.png}}
+
+\mode<presentation>
+\usepackage[spanish]{babel}
+\usepackage{beamerthemesplit}
+\usepackage[utf8]{inputenc}
+\usepackage{color}      % use if color is used in text
+
+
+% Comandos en modo Verbatim
+%\usepackage{fancyvrb}
+
+
+\title{Practica 3 - Interrupciones}
+
+\AtBeginSection[]
+
+\begin{document}
+
+\begin{frame}
+%\frametitle{Presentación}
+\titlepage
+\end{frame}
+
+\section{Introducion}
+
+\begin{frame}
+\frametitle{Interrupciones}
+
+\begin{itemize}
+ \item Mecanismo mediante el cual se puede interrumpir el procesamiento normal de la CPU
+ \item Pueden ser de origen interno o externo
+ \item Las interrupciones estan jerarquizadas por importancia
+ \begin{itemize}
+   \item Algunas se pueden inhibir (enmascarables)
+   \item Otras no
+ \end{itemize}
+ \end{itemize}
+%\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Clasificacion}
+\begin{itemize}
+ \item Las interrupciones las podemos clasificar en
+ \begin{itemize}
+
+ \item Interrupciones por Software
+ \begin{itemize}
+   \item Generalmente usadas para hacer llamadas a servicios del Sistema Operativo o monitor
+   \item Tienen una instrucción específica para invocar la interrupción
+   \item En el VonSim usamos las interrupciones para pedirle servicios al programa monitor
+ \end{itemize}
+
+ \item Interrupciones por Hardware
+ \begin{itemize}
+   \item Pedidos de Interrupcion: Son generadas por dispositivos de Entrada / Salida
+   \item Traps: Interrupciones creadas por el procesador en respuesta a ciertos eventos (ej. división por cero)
+ \end{itemize}
+ \end{itemize}
+ \end{itemize}
+
+%\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Vector de Interrupción}
+\begin{itemize}
+  \item El proceso de atención de las interrupciones en el simulador es vectorizado.
+  \item Las interrupciones pueden ser de 256 tipos distintos (un byte): 0 a 255
+  \item La tabla de vectores de interrupción es el nexo entre el tipo de interrupción y el procedimiento designado para atenderlo (manejador de interrupciones)
+  \item Esta tabla esta alojada en la posición de memoria 0000h
+  \item La tabla posee 256 entradas (una por cada tipo)
+  \item Cada entrada ocupa 4 bytes: 
+  \begin {itemize}
+  \item 2 bytes para la dirección donde esta el manejador de ese tipo de interrupción 
+  \item 2 bytes siempre en 00h (por compatibilidad)
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+
+\section{Interrupciones por Software}
+\begin{frame}
+\frametitle{Interrupciones por Software}
+
+\begin{itemize}
+ \item Para pedir una interrupción usamos la instrucción \emph{INT n}. Donde n es el número de interrupcion a invocar.
+ \item El simulador VonSim nos provee 4 interrupciones por Software
+ \begin{itemize}
+   \item \emph{Tipo 0}: Finalizar el programa actual
+   \item \emph{Tipo 3}: Hacer puntos de parada en nuestro programa 
+   \item \emph{Tipo 6}: Lectura de un Caracter
+   \item \emph{Tipo 7}: Escribe en la pantalla de comandos un bloque de datos
+ \end{itemize}
+ \item El resto de las interrupciones estan libres para ser usadas
+\end{itemize}
+%\end{block}
+\end{frame}
+
+\section{Interrupciones por Hardware}
+\subsection{Introducción}
+\begin{frame}
+\frametitle{Interrupciones por Hardware}
+\begin{itemize}
+ \item El simulador utiliza un Controlador de Interrupciones (conectado a la Entrada/Salida) para manejar las interrupciones
+ \item Para comunicarnos con el PIC y otros dispositivos vamos a usar las instrucciones de entrada / salida
+ \item También vamos a necesitar más instrucciones para controlar las interrupciones
+\end{itemize}
+%\end{block}
+\end{frame}
+
+\subsection{Mas instrucciones nuevas}
+\begin{frame}
+\frametitle{Instrucciones para  manejo de Interrupciones}
+
+\begin{itemize}
+
+ \item El simulador puede desactivar la atención de interrupciones enmascarables
+ \item Normalmente esto se utiliza mientras estamos configurando los dispositivos
+ \item Es raro mantener las interrupciones desactivadas por mucho tiempo
+ \item Se utilizan 2 instrucciones para activar o desactivar las interrupciones enmascarables 
+\begin{itemize}
+\item \emph{STI} - Activamos las interrupciones enmascarables
+ \item \emph{CLI} - Desactivamos las interrupciones enmascarables
+\end{itemize}
+\end{itemize}
+
+%\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Instrucciones para  manejo de Interrupciones}
+
+
+\begin{itemize}
+
+ \item Si configuramos un dispositivo para que nos genere una interrupción es porque estamos interesados en hacer algo cuando ocurre el evento.
+ \item Ejemplo: Si queremos tener un contador, podemos usar el dispositivo \emph{TIMER} para mantener la cuenta
+ \item Se llama manejador de interrupciones a esta subrutina.
+ \item La dirección de inicio de esta subrutina se carga en el vector de interrupción correspondiente
+ \item Hay una instrucción especial para volver desde el manejador de interrupciones. Esta instrucción es \emph{IRET}
+\end{itemize}
+
+%\end{block}
+\end{frame}
+
+
+\subsection{PIC}
+\begin{frame}
+\frametitle{Controlador de Interrupciones}
+
+
+\begin{itemize}
+ \item El encargado de administrar las interrupciones es el Controlador Programable de Interrupciones (PIC)
+ \item Los dispositivos que pueden interrumpir al procesador se conectan directamente al PIC, el PIC se conecta a la CPU.
+ \item El PIC puede manejar 8 peticiones de interrupción independentes, numeradas de 0 a 7 (INT0 a INT7)
+ \item El PIC ademas de la señal de interrupción, coloca en el bus de datos un identificador de la interrupción (vector)
+ \item Se atiende una interrupción a la vez. El número de interrupción es la prioridad, teniendo prioridad los números más bajos.
+ \item El manejador de la interrupción llamado deberá indicarle al PIC cuando termina de procesar la interrupción. 
+ \item Hasta que no se termine de atender a esta interrupción no se podrá atender a la siguiente interrupción.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Controlador de Interrupciones}
+
+
+\begin{itemize}
+ \item El PIC tiene conectados los siguientes dispositivos a sus lineas de petición de interrupción:
+ \begin{itemize}
+  \item \emph{INT0} Conectado a la tecla F-10
+  \item \emph{INT1} TIMER, Contador de Eventos
+  \item \emph{INT2} HANDSHAKE
+ \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Registros del Controlador de Interrupciones}
+
+
+\begin{itemize}
+ \item El PIC posee varios registros donde podemos configurar u obtener su estado (con las instrucciones OUT e IN)
+ \item EL PIC está conectado al bus de Entrada Salida a partir de la dirección 20h.
+ \item Tiene 12 registros en total. Los registros se encuentran ubicados en forma consecutiva a partir de la dirección base (20h).
+ \item Todos los registros son de 8 bits.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Registros del Controlador de Interrupciones}
+
+
+\begin{itemize}
+ \item \emph{EOI} (20h) Fin de Interrupción. Solo para escribir, se debe mandar el comando de fin de interrupción cuando se termino de servir la interrupción. (Valor 20h)
+ \item \emph{IMR} (21h) Registro de Mascara de Interrupciones. Permite enmascarar selectivamente las interrupciones que va a recibir el PIC. Cada bit de este registro representa una linea de interrupción. Si el valor es puesto en 1, esa interrupción estará inhibida.
+ \item \emph{IRR} (22h) Registro de Peticion de Interrupciones. Almacena las interrupciones pendientes. Cada bit de este registro representa una linea de interrupción. Cuando la interrupción se satisface, el bit de dicha línea se pone a cero.
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Registros del Controlador de Interrupciones}
+
+
+\begin{itemize}
+ \item \emph{ISR} (23h) Registro de Interrupción en Servicio. El bit que representa la línea de interrupción que se está atendiendo estará en 1. El resto en 0.
+ \item \emph{INT0..7} (24h-2Bh) Cada uno de estos registros contiene le valor del \emph{vector de interrupción} correspondiente a la entrada del mismo nombre.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{¿Como programamos el PIC?}
+
+
+\begin{itemize}
+ \item Primero desactivamos las interrupciones
+ \item Configuramos el registro \emph{IMR} para tener activas solo las interrupciones que nos interesen
+ \item Configuramos el o los vectores de interrupcion elegidos en los registros INT0 a INT7 (según corresponda)
+ \item Por último, volvemos a activar las interrupciones
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{¿Como programo el manejador de interrupción?}
+
+\begin{itemize}
+ \item Tenemos que poner la dirección del manejador de interrupciones en el vector correspondiente.
+ \item Para saber la dirección multiplicamos por 4 al vector de interrupción (recordar que cada entrada ocupa 4 bytes).
+ \item El resultado es la posición de memoria dentro de la tabla de vectores de interrupción.
+ \item En esa posición de memoria debo guardar el \emph{offset} de la subrutina que va a manejar la interrupción
+\end{itemize}
+\begin{block}{Ejemplo}
+\begin{verbatim}
+ORG 40      ; Desplazamiento 40 
+            ; Vector de Interrupción 10
+			DW RUTINA_F10
+\end{verbatim}
+\end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{¿Como programo el manejador de interrupción?}
+
+El controlador de interrupciones debe tener las siguientes condiciones
+\begin{itemize} 
+ \item Debe terminar con la instrucción \emph{IRET}.
+ \item Se debe enviar el comando de fin de interrupción al PIC para que pueda procesar la siguiente interrupción.
+ \item Normalmente no deberíamos cambiar ningún registro, ya que estamos interrumpiendo al programa en cualquier momento.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{¿Como programo el manejador de interrupción?}
+\begin{block}{Ejemplo}
+\begin{verbatim}
+ORG 3000H
+; Manejador de F-10
+RUTINA_F10: INC  CONTADOR
+            PUSH AX
+            MOV AL, 20h
+            OUT 20h, AL
+            POP AX
+            IRET
+\end{verbatim}
+\end{block}
+
+\end{frame}
+
+
+\subsection{Tecla F-10}
+\begin{frame}
+\frametitle{Tecla F-10}
+\begin{itemize}
+ \item Es la interrupción mas simple que tiene el simulador
+ \item La interrupción se genera cada vez que apretamos la tecla F-10.
+ \item Ver el ejemplo en el simulador
+\end{itemize}
+
+\end{frame}
+
+\subsection{El contador (TIMER)}
+\begin{frame}
+\frametitle{Timer}
+\begin{itemize}
+\item Es un dispositivo contador de eventos.
+\item Posee dos registros (de 8 bits)
+\begin{itemize}
+ \item \emph{CONT}: Registro contador, que se incrementa cada 1 segundo
+ \item \emph{COMP}: Registro de comparación, cuando \emph{COMP} y \emph{CONT} son iguales, se genera una interrupción.
+\end{itemize}
+\item El registro \emph{CONT} está en la dirección 10h y el registro \emph{COMP} en la dirección 11h
+\item El registro \emph{CONT} no vuelve a cero cuando se genera una interrupción.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Timer}
+Para utilizar el TIMER:
+\begin{itemize}
+\item Habilitar la interrupción en el PIC
+\item Configurar el registro \emph{COMP} para que nos llame en el intervalo deseado
+\item Poner a cero el registro \emph{CONT}
+\item Programar el manejador de interrupción.
+\end{itemize}
+
+\end{frame}
+
+
+
+\subsection{HAND SHAKE por interrupciones}
+
+\begin{frame}[fragile]
+\frametitle{Como usar el HAND-SHAKE con interrpciones}
+\begin{itemize}
+ \item Configurar el HAND-SHAKE para que utilice interrupciones
+ \item Debemos programar el PIC para que habilite la interrupción de nivel 2 (INT2)
+ \item Debemos cargar la dirección de la rutina en el vector de interrupciones correspondiente
+ \item En la rutina de la interrupción escribimos el caracter a enviar a la impresora
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Configurar PIC}
+\begin{itemize}
+ \item Habilitar la INT 2 del PIC en el IMR
+ \item Cargar el vetor correspondiente a la interrupción en el registro INT2
+\end{itemize}
+\begin{block}{}
+ \begin{verbatim}
+         CLI
+         ...
+         MOV AL, 0FBh ;  1111 1011
+         OUT IMR, AL
+         MOV AL, 10
+         OUT INT2, AL
+         ...
+ \end{verbatim}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Configurar con interrupciones}
+\begin{itemize}
+ \item Para configurar el HAND-SHAKE para que utilice interrupciones, debemos poner a 1 el bit 7 de EST
+\end{itemize}
+\begin{block}{}
+ \begin{verbatim}
+         IN AL, EST
+         OR AL, 80h
+         OUT EST, AL
+ \end{verbatim}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Como usar el HAND-SHAKE con interrpciones}
+\begin{itemize}
+ \item En la rutina de la interrupción escribimos el caracter a enviar a la impresora
+\end{itemize}
+\begin{block}{}
+ \begin{verbatim}
+  RUT_HAND:
+         ...
+         MOV AL, PROX_CAR
+         OUT DATO, AL
+         ...
+         IRET
+ \end{verbatim}
+\end{block}
+\end{frame}
+
+
+\end{document}
+
